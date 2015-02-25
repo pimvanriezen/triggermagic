@@ -154,7 +154,7 @@ void *ui_edit_tr_velocity_mode (void) {
                                     VELO_RND_WIDE, VELO_RND_NARROW,
                                     VELO_FIXED_64, VELO_FIXED_100},
                                    ui_edit_tr_notes,
-                                   ui_edit_tr_velocities,
+                                   ui_edit_nextfrom_tr_velocity_mode,
                                    ui_edit_trig);
 }
 
