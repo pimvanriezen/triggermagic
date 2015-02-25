@@ -12,15 +12,20 @@ const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   * \param values Array of result values for said names
   * \return The ultimately selected value.
   */
-char ui_select (char curval, int xpos, int ypos, int len,
-                int count, const char *names[], char values[]) {
+int ui_select (int curval, int xpos, int ypos, int len,
+               int count, const char *names[], int values[]) {
     char fmtstr[8];
-    char val = curval;
+    int valpos = 0;
+    while (valpos < count) {
+        if (values[valpos] == curval) break;
+        valpos++;
+    }
+    if (valpos == count) valpos = 0;
     sprintf (fmtstr,"%%-%is", len);
     while (1) {
         lcd_hidecursor();
         lcd_setpos (xpos, ypos);
-        lcd_printf (fmtstr, names[val]);
+        lcd_printf (fmtstr, names[valpos]);
         lcd_setpos (xpos, ypos);
         lcd_showcursor();
         
@@ -28,23 +33,88 @@ char ui_select (char curval, int xpos, int ypos, int len,
         switch (e->buttons) {
             case BTMASK_MINUS:
             case BTMASK_STK_LEFT:
-                if (val>0) val--;
+                if (valpos>0) valpos--;
                 break;
             
             case BTMASK_PLUS:
             case BTMASK_STK_RIGHT:
-                if ((val+1)<len) val++;
+                if ((valpos+1)<len) valpos++;
                 break;
             
             case BTMASK_SHIFT:
             case BTMASK_STK_CLICK:
                 button_event_free (e);
                 lcd_hidecursor();
-                return val;
+                return values[valpos];
         } 
         button_event_free (e);
     }
 }
+
+void *ui_generic_choice_menu (int curval,
+                              const char *prompt,
+                              int count,
+                              int *writeto,
+                              const char *names[],
+                              int values[],
+                              void *leftresult,
+                              void *rightresult,
+                              void *upresult) {
+    lcd_setpos (0, 1);
+    lcd_printf ("%s ", prompt);
+    int x = strlen (prompt) +1;
+    int len = 16 - x;
+    int valpos = 0;
+    while (valpos < count) {
+        if (values[valpos] == curval) break;
+        valpos++;
+    }
+    if (valpos == count) valpos = 0;
+    char fmtstr[8];
+    sprintf (fmtstr,"%%-%is", len);
+    lcd_setpos (x, 1);
+    lcd_printf (fmtstr, names[valpos]);
+    lcd_setpos (x,1);
+    lcd_showcursor();
+    
+    while (1) {
+        button_event *e = button_manager_wait_event (0);
+        switch (e->buttons) {
+            case BTMASK_MINUS:
+            case BTMASK_PLUS:
+            case BTMASK_STK_CLICK:
+                button_manager_add_event (e->buttons, 0);
+                button_event_free (e);
+                *writeto = ui_select (curval, x, 1, len, count, names, values);
+                break;
+                
+            case BTMASK_LEFT:
+            case BTMASK_STK_LEFT:
+                if (leftresult) {
+                    button_event_free (e);
+                    return leftresult;
+                }
+                break;
+                
+            case BTMASK_RIGHT:
+            case BTMASK_STK_RIGHT:
+                if (rightresult) {
+                    button_event_free (e);
+                    return rightresult;
+                }
+                break;
+            
+            case BTMASK_SHIFT:
+                if (upresult) {
+                    button_event_free (e);
+                    return upresult;
+                }
+                break;
+        }
+        button_event_free (e);
+    }
+}
+                         
 
 /** Note names */
 const char *TB_NOTES[12] = {"C-","C#","D-","D#","E-","F-",
@@ -59,6 +129,33 @@ ui_write_note (char notenr) {
         lcd_printf (TB_NOTES[notenr%12]);
         lcd_printf ("%i ", notenr/12)
     }
+}
+
+
+
+void *ui_edit_nextfrom_tr_velocity_mode (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    if (tpreset->vconf == VELO_INDIVIDUAL) return ui_edit_tr_velocities;
+    return ui_edit_tr_sendconfig;
+}
+
+void *ui_edit_tr_velocity_mode (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->vconf,
+                                   "Velocity:",
+                                   6,
+                                   &tpreset->vconf,
+                                   {"Copy","Indiv","RndWid",
+                                    "RndNrw","Fix64",
+                                    "Fix100"},
+                                   {VELO_COPY, VELO_INDIVIDUAL,
+                                    VELO_RND_WIDE, VELO_RND_NARROW,
+                                    VELO_FIXED_64, VELO_FIXED_100},
+                                   ui_edit_tr_notes,
+                                   ui_edit_tr_velocities,
+                                   ui_edit_trig);
 }
 
 /** The chord/sequence note editor. Edits as many notes as configured
@@ -164,37 +261,15 @@ void *ui_edit_tr_notecount (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
-    lcd_printf ("# Notes: %i      ",tpreset->lastnote+1);
-    int lnote;
-    
-    button_event *e = button_manager_wait_event (0);
-    switch (e->buttons) {
-        case BTMASK_PLUS:
-        case BTMASK_MINUS:
-        case BTMASK_STK_CLICK:
-            lnote = ui_select (tpreset->lastnote, 9, 1, 7, 8,
-                               {"1","2","3","4","5","6","7","8"},
-                               {0,1,2,3,4,5,6,7});
-            while (tpreset->lastnote < lnote) {
-                /* Extend last note in sequence if sequence length
-                   is extended */
-                char lst = tpreset->notes[tpreset->lastnote];
-                tpreset->lastnote++;
-                tpreset->notes[tpreset->lastnote] = lst;
-            }
-            tpreset->lastnote = lnote;
-            break;
-        
-        case BTMASK_RIGHT:
-            button_event_free (e);
-            return ui_edit_tr_notes;
-        
-        case BTMASK_SHIFT:
-            button_event_free (e);
-            return ui_edit_trig;
-    }
-    button_event_free (e);
-    return ui_edit_tr_notecount;
+    return ui_generic_choice_menu (tpreset->lastnote,
+                                   "# Notes:",
+                                   8,
+                                   &tpreset->lastnote,
+                                   {"1","2","3","4","5","6","7","8"},
+                                   {0,1,2,3,4,5,6,7},
+                                   NULL,
+                                   ui_edit_tr_notes,
+                                   ui_edit_trig);
 }
 
 /** Trigger selection menu. */
