@@ -57,6 +57,7 @@ typedef enum {
     trigger/trigger */
 typedef struct triggerpreset_s {
     char             notes[8]; /**< Note values, 0=end, 1=rst */
+    int              lastnote; /**< Position of last active note */
     velocityconfig   vconf; /**< Velocity settings */
     char             velocities[8]; /**< Individual fixed velocities */
     sendconfig       send; /**< Send settings */
@@ -64,7 +65,7 @@ typedef struct triggerpreset_s {
     gateconfig       sgate; /**< Sequencer gate settings */
     sequencerange    range; /**< Sequencer arpeggiator range */
     sequencetype     seq; /**< Sequencer loop settings */
-    char             pad[24]; /**< Room for future expansion */
+    char             pad[20]; /**< Room for future expansion */
 } triggerpreset;
 
 /** Storage for a single, complete, preset */

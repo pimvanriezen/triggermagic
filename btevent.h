@@ -49,7 +49,7 @@ typedef struct button_manager_s {
 
 /* ============================== GLOBALS ============================== */
 
-extern button_manager *BT;
+extern button_manager BT;
 
 /* ============================= FUNCTIONS ============================= */
 
