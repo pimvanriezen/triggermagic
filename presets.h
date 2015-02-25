@@ -77,6 +77,7 @@ typedef struct preset_s {
 /** Global performance context */
 typedef struct context_global_s {
     int              preset_nr; /**< Number of loaded preset (1-99) */
+    int              trigger_nr; /**< Edited trigger number (0-11) */
     preset           preset; /**< Working copy of loaded preset */
     int              transpose; /**< Current transpose */
     preset           presets[100]; /**< Stored presets 1-99 */

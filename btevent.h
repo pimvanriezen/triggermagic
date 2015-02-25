@@ -3,23 +3,23 @@
 
 /* =============================== TYPES =============================== */
 
-#define BTID_UP         0
-#define BTID_DOWN       1
+#define BTID_LEFT       0
+#define BTID_RIGHT      1
 #define BTID_MINUS      2
 #define BTID_PLUS       3
 #define BTID_SHIFT      4
-#define BTID_LEFT       5
-#define BTID_RIGHT      6
-#define BTID_CLICK      7
+#define BTID_STK_LEFT   5
+#define BTID_STK_RIGHT  6
+#define BTID_STK_CLICK  7
 
-#define BTMASK_UP       (1 << BTID_UP)
-#define BTMASK_DOWN     (1 << BTID_DOWN)
-#define BTMASK_MINUS    (1 << BTID_MINUS)
-#define BTMASK_PLUS     (1 << BTID_PLUS)
-#define BTMASK_SHIFT    (1 << BTID_SHIFT)
-#define BTMASK_LEFT     (1 << BTID_LEFT)
-#define BTMASK_RIGHT    (1 << BTID_RIGHT)
-#define BTMASK_CLICK    (1 << BTID_CLICK)
+#define BTMASK_LEFT      (1 << BTID_LEFT)
+#define BTMASK_RIGHT     (1 << BTID_RIGHT)
+#define BTMASK_MINUS     (1 << BTID_MINUS)
+#define BTMASK_PLUS      (1 << BTID_PLUS)
+#define BTMASK_SHIFT     (1 << BTID_SHIFT)
+#define BTMASK_STK_LEFT  (1 << BTID_STK_LEFT)
+#define BTMASK_STK_RIGHT (1 << BTID_STK_RIGHT)
+#define BTMASK_STK_CLICK (1 << BTID_STK_CLICK)
 
 /** Event flowing out of the button manager. Represents a specific
     configuration of buttons pressed. */
