@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+button_manager BT;
+
 int musleep (uint64_t useconds) {
     struct timespec ts = {
         .tv_sec = (long int) (useconds / 1000000),
