@@ -53,14 +53,12 @@ void button_manager_main (thread *t) {
         }
         if (changed && pressedcount) {
             if ((!BT.useshift) || (buttons != BTMASK_SHIFT)) {
-                printf ("addevent 1\n");
                 button_manager_add_event (buttons, false);
             }
         }
-        else if (pressedcount) {
+        else if (pressedcount && buttons != BTMASK_SHIFT) {
             if (BT.tick - lastchange > 20) {
                 if ((BT.tick & 3) == 0) {
-                    printf ("addevent 2\n");
                     button_manager_add_event (buttons, true);
                 }
             }
