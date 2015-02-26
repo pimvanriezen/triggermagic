@@ -178,10 +178,10 @@ void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu ((int) tpreset->range,
+    return ui_generic_choice_menu ((int) tpreset->move,
                                    "Move:",
                                    7,
-                                   (int*) &tpreset->range,
+                                   (int*) &tpreset->move,
                                    (const char *[]){
                                         "Single",
                                         "Up",
