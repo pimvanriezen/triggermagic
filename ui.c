@@ -584,21 +584,24 @@ void *ui_edit_tr_notecount (void) {
 /** Trigger selection menu. */
 void *ui_edit_trig (void) {
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n                ", CTX.trigger_nr+1);
-    
+    lcd_printf ("%02i|Edit Triggers\nTrigger: %02i      ",   
+                CTX.preset_nr,
+                CTX.trigger_nr+1);
+        
     button_event *e = button_manager_wait_event (0);
     switch (e->buttons) {
-        case BTMASK_MINUS:
+        case BTMASK_LEFT:
         case BTMASK_STK_LEFT:
             if (CTX.trigger_nr>0) CTX.trigger_nr--;
             break;
         
-        case BTMASK_PLUS:
+        case BTMASK_RIGHT:
         case BTMASK_STK_RIGHT:
             if (CTX.trigger_nr<11) CTX.trigger_nr++;
             break;
         
-        case BTMASK_RIGHT:
+        case BTMASK_PLUS:
+        case BTMASK_MINUS:
             button_event_free (e);
             return ui_edit_tr_notecount;
             
