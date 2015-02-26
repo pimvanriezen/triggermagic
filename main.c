@@ -21,7 +21,7 @@ void context_init (void) {
     CTX.presets[1].triggers[7].notes[0] = 62;
     CTX.presets[1].triggers[8].notes[0] = 63;
     context_load_preset (1);
-    FILE *pst = fopen ("/home/pi/triggermagic.presets");
+    FILE *pst = fopen ("/home/pi/triggermagic.presets","r");
     if (pst) {
         fread (CTX.presets, sizeof(preset), 100, pst);
         fclose (pst);
