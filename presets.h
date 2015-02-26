@@ -39,14 +39,16 @@ typedef enum {
 
 /** Defines how the sequence is played */
 typedef enum {
-    SEQ_SINGLE, /**< Single shot playback */
-    SEQ_LOOP_UP, /**< Left-to-right, rinse, repeat */
-    SEQ_LOOP_DOWN, /**< Right-to-left, rinse repeat */
-    SEQ_LOOP_UPDOWN,   /**< Left-to-right-to-left */
-    SEQ_LOOP_STEPUP,   /**< 123234345456567678781812 */
-    SEQ_LOOP_STEPDOWN, /**< 876765654543432321218187 */
-    SEQ_LOOP_RANDOM    /**< 4444444 (fair dice roll) */
-} sequencetype;
+    MOVE_SINGLE, /**< Single shot playback */
+    MOVE_LOOP_UP, /**< Left-to-right, rinse, repeat */
+    MOVE_LOOP_DOWN, /**< Right-to-left, rinse repeat */
+    MOVE_LOOP_UPDOWN,   /**< Left-to-right-to-left */
+    MOVE_LOOP_STEPUP,   /**< 123234345456567678781812 */
+    MOVE_LOOP_STEPDOWN, /**< 876765654543432321218187 */
+    MOVE_LOOP_RANDOM    /**< 4444444 (fair dice roll) */
+} movetype;
+
+typedef int seqlen;
 
 /** Defines magical values for sequencer gate width, values from
     1 to 100 inclusive represent actual percentages */
@@ -64,9 +66,10 @@ typedef struct triggerpreset_s {
     char             velocities[8]; /**< Individual fixed velocities */
     sendconfig       send; /**< Send settings */
     notemode         nmode; /**< Note send length settings */
+    seqlen           slen; /**< Sequence note length */
     gateconfig       sgate; /**< Sequencer gate settings */
     sequencerange    range; /**< Sequencer arpeggiator range */
-    sequencetype     seq; /**< Sequencer loop settings */
+    movetype         move; /**< Sequencer loop settings */
     char             pad[20]; /**< Room for future expansion */
 } triggerpreset;
 

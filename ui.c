@@ -154,6 +154,267 @@ void ui_write_note (char notenr) {
     }
 }
 
+void *ui_edit_tr_seq_move (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->range,
+                                   "Move:",
+                                   7,
+                                   &tpreset->range,
+                                   {
+                                        "Single",
+                                        "Up",
+                                        "Down",
+                                        "Up/Down",
+                                        "Step Up",
+                                        "Step Down",
+                                        "Random"
+                                   },
+                                   {
+                                        MOVE_SINGLE,
+                                        MOVE_LOOP_UP,
+                                        MOVE_LOOP_DOWN,
+                                        MOVE_LOOP_UPDOWN,
+                                        MOVE_LOOP_STEPUP,
+                                        MOVE_LOOP_STEPDOWN,
+                                        MOVE_LOOP_RANDOM
+                                   },
+                                   ui_edit_tr_seq_range,
+                                   ui_edit_tr_seq_move,
+                                   ui_edit_trig);
+}
+
+void *ui_edit_tr_seq_range (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->range,
+                                   "Range:",
+                                   3,
+                                   &tpreset->range,
+                                   {
+                                        "Orig",
+                                        "+1 Oct",
+                                        "+2 Oct"
+                                   },
+                                   {
+                                        RANGE_ORIG,
+                                        RANGE_1_OCT,
+                                        RANGE_2_OCT
+                                   },
+                                   ui_edit_tr_seq_gate,
+                                   ui_edit_tr_seq_move,
+                                   ui_edit_trig);
+}
+
+void *ui_edit_tr_seq_gate (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->sgate,
+                                   "Gate:",
+                                   7,
+                                   &tpreset->sgate,
+                                   {
+                                        "12%",
+                                        "25%",
+                                        "50%",
+                                        "75%",
+                                        "100%",
+                                        "Rnd Wide",
+                                        "Rnd Narrow"
+                                   },
+                                   {
+                                        12,
+                                        25,
+                                        50,
+                                        75,
+                                        100,
+                                        SGATE_RND_WIDE,
+                                        SGATE_RND_NARROW
+                                   },
+                                   ui_edit_tr_seq_length,
+                                   ui_edit_tr_seq_range,
+                                   ui_edit_trig);
+}
+
+void *ui_edit_tr_seq_length (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->nmode,
+                                   "Length:",
+                                   4,
+                                   &tpreset->nmode,
+                                   {
+                                        "1/2",
+                                        "1/4",
+                                        "1/8",
+                                        "1/16"
+                                   },
+                                   {
+                                        2,
+                                        4,
+                                        8,
+                                        16
+                                   },
+                                   ui_edit_tr_sendconfig,
+                                   ui_edit_tr_seq_gate,
+                                   ui_edit_trig);
+}
+
+void *ui_edit_tr_notes_mode (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i Note\n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->nmode,
+                                   "Mode:",
+                                   6,
+                                   &tpreset->nmode,
+                                   {
+                                        "Gate",
+                                        "Fixed 1/2",
+                                        "Fixed 1/4",
+                                        "Fixed 1/8",
+                                        "Fixed 1/16",
+                                        "Legato"
+                                   },
+                                   {
+                                        NMODE_GATE,
+                                        NMODE_FIXED_2,
+                                        NMODE_FIXED_4,
+                                        NMODE_FIXED_8,
+                                        NMODE_FIXED_16,
+                                        NMODE_LEGATO
+                                   },
+                                   ui_edit_tr_sendconfig,
+                                   ui_edit_tr_notes_mode,
+                                   ui_edit_trig);
+}
+
+void *ui_edit_prevfrom_tr_sendconfig (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    if (tpreset->vconf == VELO_INDIVIDUAL) return ui_edit_tr_velocities;
+    return ui_edit_tr_velocity_mode;
+}
+
+void *ui_edit_nextfrom_tr_sendconfig (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    if (tpreset->send == SEND_NOTES) return ui_edit_tr_notes_mode;
+    return ui_edit_tr_seq_length;
+}
+
+void *ui_edit_tr_sendconfig (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    return ui_generic_choice_menu (tpreset->send,
+                                   "Send:",
+                                   2,
+                                   &tpreset->send,
+                                   {"Notes","Sequence"}.
+                                   {SEND_NOTES,SEND_SEQUENCE},
+                                   ui_edit_prevfrom_tr_sendconfig,
+                                   ui_edit_nextfrom_tr_sendconfig,
+                                   ui_edit_trig);
+}
+
+
+
+void *ui_edit_velocities (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    int ncursor = 0;
+
+    while (1) {    
+        lcd_home();
+        for (int i=0; i<=tpreset->lastnote; ++i) {
+            lcd_printf ("%3i ", tpreset->velocities[i]);
+            if (i==3) lcd_printf ("\n");
+        }
+        for (; i<8; ++i) {
+            lcd_printf ("    ");
+            if (i==3) lcd_printf ("\n");
+        }
+        lcd_setpos (4*(ncursor&3),ncursor/4);
+        lcd_showcursor ();
+        
+        button_event *e = button_manager_wait_event (0);
+        switch (e->buttons) {
+            case BTMASK_LEFT:
+                if (ncursor>0) ncursor--;
+                break;
+            
+            case BTMASK_RIGHT:
+                if (ncursor < tpreset->lastnote) ncursor++;
+                break;
+                
+            case BTMASK_MINUS:
+            case BTMASK_STK_LEFT;
+                if (tpreset->velocities[ncursor]>0) {
+                    tpreset->velocities[ncursor]--;
+                }
+                break;
+                
+            case BTMASK_PLUS:
+            case BTMASK_STK_RIGHT:
+                if (tpreset->velocities[ncursor]<120) {
+                    tpreset->velocities[ncursor]++;
+                }
+                break;
+                
+            case BTMASK_SHIFT:
+                button_event_free (e);
+                return ui_edit_tr_velocities;
+                break;
+        }
+        button_event_free (e);
+        
+    }
+}
+
+void *ui_edit_tr_velocities (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("\002 %3i", tpreset->velocities[0]);
+    if (tpreset->lastnote) {
+        lcd_printf ("%3i ", tpreset->velocities[1]);
+        if (tpreset->lastnote > 1) {
+            lcd_printf ("%3i ", tpreset->velocities[2]);
+            if (tpreset->lastnote > 2) {
+                lcd_printf ("..");
+            }
+        }
+    }
+    
+    button_event *e = button_manager_wait_event (0);
+    switch (e->buttons) {
+        case BTMASK_LEFT:
+            button_event_free (e);
+            return ui_edit_tr_velocity_mode;
+        
+        case BTMASK_RIGHT:
+            button_event_free (e);
+            return ui_edit_tr_sendconfig;
+        
+        case BTMASK_PLUS:
+        case BTMASK_MINUS:
+        case BTMASK_STK_CLICK:
+            button_event_free (e);
+            return ui_edit_velocities;
+        
+        case BTMASK_SHIFT:
+            button_event_free (e);
+            return ui_edit_trig;
+    }
+    
+    button_event_free (e);
+    return ui_edit_tre_notes;
+}
+
+
+
 /** Determines what menu is to the right of 'velocity mode',
   * depending on the selected mode. If it is set to
   * VELO_INDIVIDUAL, a menu should appear for editing the
