@@ -12,6 +12,14 @@ void context_init (void) {
     strcpy (CTX.presets[1].name, "Rendez-vous    ");
     CTX.presets[1].tempo = 125;
     CTX.presets[1].triggers[0].notes[0] = 48;
+    CTX.presets[1].triggers[1].notes[0] = 53;
+    CTX.presets[1].triggers[2].notes[0] = 55;
+    CTX.presets[1].triggers[3].notes[0] = 56;
+    CTX.presets[1].triggers[4].notes[0] = 58;
+    CTX.presets[1].triggers[5].notes[0] = 59;
+    CTX.presets[1].triggers[6].notes[0] = 60;
+    CTX.presets[1].triggers[7].notes[0] = 62;
+    CTX.presets[1].triggers[8].notes[0] = 63;
     context_load_preset (1);
 }
 
