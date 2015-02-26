@@ -1,3 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+#include "ui.h"
+#include "lcd.h"
+#include "presets.h"
+#include "btevent.h"
+
 /** Usable character set for preset names */
 const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                    "0123456789./-!@";
@@ -7,9 +17,11 @@ const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   */
 void ui_main (void) {
     uifunc call = ui_performance;
+    uifunc ncall = NULL;
     lcd_init();
     while (1) {
-        call = call();
+        ncall = call();
+        if (ncall) call = ncall;
     }
 }
 
@@ -137,11 +149,14 @@ void *ui_generic_choice_menu (int curval,
         button_event_free (e);
     }
 }
-                         
+
+void* ui_edit_global (void) {
+    return ui_performance;
+}
 
 /** Note names */
 const char *TB_NOTES[12] = {"C-","C#","D-","D#","E-","F-",
-                            "F#","G-","G#","A","A#","B-"}
+                            "F#","G-","G#","A","A#","B-"};
 
 /** Write a note value to the LCD.
   * \param notenr The MIDI note number
@@ -150,7 +165,7 @@ void ui_write_note (char notenr) {
     if (notenr == 0) lcd_printf ("---");
     else {
         lcd_printf (TB_NOTES[notenr%12]);
-        lcd_printf ("%i ", notenr/12)
+        lcd_printf ("%i ", notenr/12);
     }
 }
 
@@ -158,11 +173,11 @@ void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->range,
+    return ui_generic_choice_menu ((int) tpreset->range,
                                    "Move:",
                                    7,
-                                   &tpreset->range,
-                                   {
+                                   (int*) &tpreset->range,
+                                   (const char *[]){
                                         "Single",
                                         "Up",
                                         "Down",
@@ -171,7 +186,7 @@ void *ui_edit_tr_seq_move (void) {
                                         "Step Down",
                                         "Random"
                                    },
-                                   {
+                                   (int []){
                                         MOVE_SINGLE,
                                         MOVE_LOOP_UP,
                                         MOVE_LOOP_DOWN,
@@ -189,16 +204,16 @@ void *ui_edit_tr_seq_range (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->range,
+    return ui_generic_choice_menu ((int) tpreset->range,
                                    "Range:",
                                    3,
-                                   &tpreset->range,
-                                   {
+                                   (int *) &tpreset->range,
+                                   (const char *[]){
                                         "Orig",
                                         "+1 Oct",
                                         "+2 Oct"
                                    },
-                                   {
+                                   (int[]){
                                         RANGE_ORIG,
                                         RANGE_1_OCT,
                                         RANGE_2_OCT
@@ -212,11 +227,11 @@ void *ui_edit_tr_seq_gate (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->sgate,
+    return ui_generic_choice_menu ((int) tpreset->sgate,
                                    "Gate:",
                                    7,
-                                   &tpreset->sgate,
-                                   {
+                                   (int *) &tpreset->sgate,
+                                   (const char *[]){
                                         "12%",
                                         "25%",
                                         "50%",
@@ -225,7 +240,7 @@ void *ui_edit_tr_seq_gate (void) {
                                         "Rnd Wide",
                                         "Rnd Narrow"
                                    },
-                                   {
+                                   (int[]){
                                         12,
                                         25,
                                         50,
@@ -243,17 +258,17 @@ void *ui_edit_tr_seq_length (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->nmode,
+    return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Length:",
                                    4,
-                                   &tpreset->nmode,
-                                   {
+                                   (int *)&tpreset->nmode,
+                                   (const char *[]){
                                         "1/2",
                                         "1/4",
                                         "1/8",
                                         "1/16"
                                    },
-                                   {
+                                   (int[]){
                                         2,
                                         4,
                                         8,
@@ -268,11 +283,11 @@ void *ui_edit_tr_notes_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i Note\n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->nmode,
+    return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Mode:",
                                    6,
-                                   &tpreset->nmode,
-                                   {
+                                   (int*)&tpreset->nmode,
+                                   (const char *[]){
                                         "Gate",
                                         "Fixed 1/2",
                                         "Fixed 1/4",
@@ -280,7 +295,7 @@ void *ui_edit_tr_notes_mode (void) {
                                         "Fixed 1/16",
                                         "Legato"
                                    },
-                                   {
+                                   (int[]){
                                         NMODE_GATE,
                                         NMODE_FIXED_2,
                                         NMODE_FIXED_4,
@@ -309,12 +324,12 @@ void *ui_edit_tr_sendconfig (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->send,
+    return ui_generic_choice_menu ((int)tpreset->send,
                                    "Send:",
                                    2,
-                                   &tpreset->send,
-                                   {"Notes","Sequence"}.
-                                   {SEND_NOTES,SEND_SEQUENCE},
+                                   (int*)&tpreset->send,
+                                   (const char *[]){"Notes","Sequence"},
+                                   (int[]){SEND_NOTES,SEND_SEQUENCE},
                                    ui_edit_prevfrom_tr_sendconfig,
                                    ui_edit_nextfrom_tr_sendconfig,
                                    ui_edit_trig);
@@ -328,7 +343,8 @@ void *ui_edit_velocities (void) {
 
     while (1) {    
         lcd_home();
-        for (int i=0; i<=tpreset->lastnote; ++i) {
+        int i;
+        for (i=0; i<=tpreset->lastnote; ++i) {
             lcd_printf ("%3i ", tpreset->velocities[i]);
             if (i==3) lcd_printf ("\n");
         }
@@ -350,7 +366,7 @@ void *ui_edit_velocities (void) {
                 break;
                 
             case BTMASK_MINUS:
-            case BTMASK_STK_LEFT;
+            case BTMASK_STK_LEFT:
                 if (tpreset->velocities[ncursor]>0) {
                     tpreset->velocities[ncursor]--;
                 }
@@ -410,7 +426,7 @@ void *ui_edit_tr_velocities (void) {
     }
     
     button_event_free (e);
-    return ui_edit_tre_notes;
+    return ui_edit_tr_notes;
 }
 
 
@@ -432,14 +448,14 @@ void *ui_edit_tr_velocity_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->vconf,
+    return ui_generic_choice_menu ((int)tpreset->vconf,
                                    "Velocity:",
                                    6,
-                                   &tpreset->vconf,
-                                   {"Copy","Indiv","RndWid",
+                                   (int*)&tpreset->vconf,
+                                   (const char *[]){"Copy","Indiv","RndWid",
                                     "RndNrw","Fix64",
                                     "Fix100"},
-                                   {VELO_COPY, VELO_INDIVIDUAL,
+                                   (int[]){VELO_COPY, VELO_INDIVIDUAL,
                                     VELO_RND_WIDE, VELO_RND_NARROW,
                                     VELO_FIXED_64, VELO_FIXED_100},
                                    ui_edit_tr_notes,
@@ -456,7 +472,8 @@ void *ui_edit_notes (void) {
 
     while (1) {    
         lcd_home();
-        for (int i=0; i<=tpreset->lastnote; ++i) {
+        int i;
+        for (i=0; i<=tpreset->lastnote; ++i) {
             ui_write_note (tpreset->notes[i]);
             if (i==3) lcd_printf ("\n");
         }
@@ -478,7 +495,7 @@ void *ui_edit_notes (void) {
                 break;
                 
             case BTMASK_MINUS:
-            case BTMASK_STK_LEFT;
+            case BTMASK_STK_LEFT:
                 if (tpreset->notes[ncursor]>0) {
                     tpreset->notes[ncursor]--;
                 }
@@ -542,7 +559,7 @@ void *ui_edit_tr_notes (void) {
     }
     
     button_event_free (e);
-    return ui_edit_tre_notes;
+    return ui_edit_tr_notes;
 }
 
 /** Displays the number of notes in the chord/sequence for editing */
@@ -550,12 +567,13 @@ void *ui_edit_tr_notecount (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
-    return ui_generic_choice_menu (tpreset->lastnote,
+    return ui_generic_choice_menu ((int)tpreset->lastnote,
                                    "# Notes:",
                                    8,
-                                   &tpreset->lastnote,
-                                   {"1","2","3","4","5","6","7","8"},
-                                   {0,1,2,3,4,5,6,7},
+                                   (int*)&tpreset->lastnote,
+                                   (const char *[])
+                                        {"1","2","3","4","5","6","7","8"},
+                                   (int[]){0,1,2,3,4,5,6,7},
                                    NULL,
                                    ui_edit_tr_notes,
                                    ui_edit_trig);
@@ -612,25 +630,25 @@ void *ui_edit_name (void) {
             
             case BTMASK_STK_LEFT:
             case BTMASK_MINUS:
-                if (CTX.preset_name[crsr] != ' ') {
-                    const char *pos = strchr (CSET, CTX.preset_name[crsr]);
+                if (CTX.preset.name[crsr] != ' ') {
+                    const char *pos = strchr (CSET, CTX.preset.name[crsr]);
                     if (! pos) {
-                        CTX.preset_name[crsr] = ' ';
+                        CTX.preset.name[crsr] = ' ';
                         break;
                     }
-                    CTX.preset_name[crsr] = *(pos-1);
+                    CTX.preset.name[crsr] = *(pos-1);
                 }
                 break;
             
             case BTMASK_STK_RIGHT:
             case BTMASK_PLUS:
-                if (CTX.prset_name[crsr] != '@') {
-                    const char *pos = strchr (CSET, CTX.preset_name[crsr]);
+                if (CTX.preset.name[crsr] != '@') {
+                    const char *pos = strchr (CSET, CTX.preset.name[crsr]);
                     if (! pos) {
-                        CTX.preset_name[crsr] = '@';
+                        CTX.preset.name[crsr] = '@';
                         break;
                     }
-                    CTX.preset_name[crsr] = *(pos+1);
+                    CTX.preset.name[crsr] = *(pos+1);
                 }
                 break;
             
@@ -647,7 +665,7 @@ void *ui_edit_name (void) {
 void *ui_edit_main (void) {
     uint8_t choice = 0;
     const char *ch_name[3] = {"Edit name","Triggers","Global"};
-    ui_handler ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
+    uifunc ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
     while (1) {
         lcd_home();
         lcd_printf ("%02i|%-13s\n  |%-13s",   
@@ -690,7 +708,7 @@ void *ui_performance (void) {
                 CTX.preset_nr,
                 CTX.preset.name,
                 CTX.preset.tempo,
-                (CTX.transpose<-9||CTX.transpose>9)?"":" ";
+                (CTX.transpose<-9||CTX.transpose>9)?"":" ",
                 CTX.transpose<0?'-':'+',
                 CTX.transpose<0?-CTX.transpose:CTX.transpose);
     
@@ -729,7 +747,7 @@ void *ui_performance (void) {
             break;
         
         case BTMASK_MINUS:
-            if (CTX.prset.tempo > 41) {
+            if (CTX.preset.tempo > 41) {
                 CTX.preset.tempo--;
             }
             break;

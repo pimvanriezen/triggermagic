@@ -1,6 +1,10 @@
 #ifndef _BTEVENT_H
 #define _BTEVENT_H 1
 
+#include <stdbool.h>
+#include <stdint.h>
+#include "thread.h"
+
 /* =============================== TYPES =============================== */
 
 #define BTID_LEFT       0
@@ -59,3 +63,5 @@ void             button_manager_add_event (uint8_t, bool);
 button_event    *button_manager_wait_event (bool useshift);
 
 void             button_event_free (button_event *);
+
+#endif
