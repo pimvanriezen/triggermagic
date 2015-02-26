@@ -69,6 +69,13 @@ int ui_select (int curval, int xpos, int ypos, int len,
                 button_event_free (e);
                 lcd_hidecursor();
                 return values[valpos];
+                
+            case BTMASK_LEFT:
+            case BTMASK_RIGHT:
+                button_manager_add_event (e->buttons, 0);
+                button_event_free (e);
+                lcd_hidecursor();
+                return values[valpos];
         } 
         button_event_free (e);
     }
