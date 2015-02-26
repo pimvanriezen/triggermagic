@@ -1,7 +1,7 @@
 #include "btevent.h"
-
-#define _BSD_SOURCE
 #include <unistd.h>
+#include <pifacecad.h>
+#include <stdlib.h>
 
 /** Initializes and spawns the button manager. Presumes the piface
   * has already been initialized through lcd_init().
