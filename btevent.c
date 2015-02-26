@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <pifacecad.h>
 #include <stdlib.h>
+#include <time.h>
 
 int musleep (uint64_t useconds) {
     struct timespec ts = {
