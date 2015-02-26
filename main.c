@@ -38,7 +38,7 @@ void context_load_preset (int nr) {
         for (int i=0; i<12; ++i) {
             CTX.preset.triggers[i].move - MOVE_LOOP_UP;
             CTX.preset.triggers[i].sgate = 50;
-            CTX.preset.triggers[i].seqlen = 8;
+            CTX.preset.triggers[i].slen = 8;
         }
     }
 }
