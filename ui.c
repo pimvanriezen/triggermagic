@@ -109,7 +109,6 @@ void *ui_generic_choice_menu (int curval,
     sprintf (fmtstr,"%%-%is", len);
     lcd_setpos (x, 1);
     lcd_printf (fmtstr, names[valpos]);
-    lcd_setpos (x,1);
     lcd_hidecursor();
     
     while (1) {
