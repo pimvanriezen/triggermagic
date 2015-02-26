@@ -2,6 +2,17 @@
 const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                    "0123456789./-!@";
 
+/** Main runner. Jumpst into ui_performance(), then follows the trail left
+  * by returns.
+  */
+void ui_main (void) {
+    uifunc call = ui_performance;
+    lcd_init();
+    while (1) {
+        call = call();
+    }
+}
+
 /** Generic multi-selector.
   * \param curval Current value.
   * \param xpos X position of value display
