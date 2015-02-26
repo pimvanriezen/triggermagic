@@ -406,8 +406,11 @@ void *ui_edit_tr_velocities (void) {
             if (tpreset->lastnote > 2) {
                 lcd_printf ("..");
             }
+            else lcd_printf ("  ");
         }
+        else lcd_printf ("      ");
     }
+    else lcd_printf ("          ");
     
     button_event *e = button_manager_wait_event (0);
     switch (e->buttons) {
