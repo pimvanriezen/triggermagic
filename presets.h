@@ -8,7 +8,9 @@ typedef enum {
     VELO_COPY = 0, /**< Copy from incoming Note On */
     VELO_INDIVIDUAL=1, /**< Set individually per configued note */
     VELO_RND_WIDE=2, /**< Random velocities 1-127 */
-    VELO_RND_NARROW=3 /**< Random velocities 70-120 */
+    VELO_RND_NARROW=3, /**< Random velocities 70-120 */
+    VELO_FIXED_64=4, /**< All fixed velocities of 64 */
+    VELO_FIXED_100=5 /**< All fixed velocities of 100 */
 } velocityconfig;
 
 /** Defines how to handle multiple configured notes */
