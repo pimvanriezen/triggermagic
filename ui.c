@@ -584,7 +584,7 @@ void *ui_edit_tr_notecount (void) {
 /** Trigger selection menu. */
 void *ui_edit_trig (void) {
     lcd_home();
-    lcd_printf ("%02i|Edit Triggers\nTrigger: %02i      ",   
+    lcd_printf ("%02i|Edit Triggers\n  |Trigger: %02i   ",   
                 CTX.preset_nr,
                 CTX.trigger_nr+1);
         
