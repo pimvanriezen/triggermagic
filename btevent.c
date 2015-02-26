@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <pifacecad.h>
 #include <stdlib.h>
+#define _POSIX_C_SOURCE 199309L
 #include <time.h>
 
 int musleep (uint64_t useconds) {
