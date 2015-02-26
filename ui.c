@@ -600,7 +600,7 @@ void *ui_edit_trig (void) {
         
         case BTMASK_RIGHT:
             button_event_free (e);
-            return ui_edit_tr_notes;
+            return ui_edit_tr_notecount;
             
         case BTMASK_SHIFT:
             button_event_free (e);
