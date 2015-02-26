@@ -123,7 +123,7 @@ const char *TB_NOTES[12] = {"C-","C#","D-","D#","E-","F-",
 /** Write a note value to the LCD.
   * \param notenr The MIDI note number
   */
-ui_write_note (char notenr) {
+void ui_write_note (char notenr) {
     if (notenr == 0) lcd_printf ("---");
     else {
         lcd_printf (TB_NOTES[notenr%12]);
