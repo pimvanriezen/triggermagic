@@ -11,9 +11,9 @@ void lcd_init (void) {
     uint8_t sym_velo[] = {4,4,4,4,21,14,4,0};    
     pifacecad_open();
     lcd_backlight_on();
-    lcd_store_custom_bitmap (0, sym_div);
-    lcd_store_custom_bitmap (1, sym_qnote);
-    lcd_store_custom_bitmap (2, sym_velo);
+    pifacecad_lcd_store_custom_bitmap (0, sym_div);
+    pifacecad_lcd_store_custom_bitmap (1, sym_qnote);
+    pifacecad_lcd_store_custom_bitmap (2, sym_velo);
 }
 
 /** Turn on LCD backlight */
