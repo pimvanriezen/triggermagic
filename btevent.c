@@ -15,7 +15,7 @@ void button_manager_init (void) {
     BT.tick = 0;
     conditional_init (&BT.eventcond);
     BT.first = BT.last = NULL;
-    bt.useshift = true;
+    BT.useshift = true;
     pthread_mutex_init (&BT.lock, NULL);
     thread_spawn (&BT.super);
 }
