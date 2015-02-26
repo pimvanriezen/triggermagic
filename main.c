@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "btevent.h"
 #include "lcd.h"
 #include "ui.h"
@@ -16,6 +17,7 @@ void context_init (void) {
 void context_load_preset (int nr) {
     if (nr<1 || nr>99) return;
     memcpy (&CTX.preset, CTX.presets+nr, sizeof (preset));
+    CTX.preset_nr = nr;
 }
 
 void context_store_preset (void) {
