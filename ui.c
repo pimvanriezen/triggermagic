@@ -110,7 +110,7 @@ void *ui_generic_choice_menu (int curval,
     lcd_setpos (x, 1);
     lcd_printf (fmtstr, names[valpos]);
     lcd_setpos (x,1);
-    lcd_showcursor();
+    lcd_hidecursor();
     
     while (1) {
         button_event *e = button_manager_wait_event (0);
