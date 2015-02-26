@@ -19,7 +19,6 @@ int musleep (uint64_t useconds) {
   * has already been initialized through lcd_init().
   */
 void button_manager_init (void) {
-    thread_init (&BT.super, button_manager_main, NULL);
     for (int i=0; i<8; ++i) {
         BT.states[i].pressed = false;
         BT.states[i].lastchange = 0;
@@ -29,7 +28,7 @@ void button_manager_init (void) {
     BT.first = BT.last = NULL;
     BT.useshift = true;
     pthread_mutex_init (&BT.lock, NULL);
-    thread_spawn (&BT.super);
+    thread_init (&BT.super, button_manager_main, NULL);
 }
 
 /** Thread loop for the button manager. Reads the button state about every
