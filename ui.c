@@ -536,6 +536,7 @@ void *ui_edit_tr_notes (void) {
             }
         }
     }
+    lcd_hidecursor();
     
     button_event *e = button_manager_wait_event (0);
     switch (e->buttons) {
