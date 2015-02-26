@@ -38,7 +38,7 @@ void button_manager_init (void) {
 void button_manager_main (thread *t) {
     uint64_t lastchange = 0;
     while (1) {
-        uint8_t buttons = pifacecad_read_switches();
+        uint8_t buttons = pifacecad_read_switches() ^ 0xff;
         bool changed = false;
         int pressedcount = 0;
         for (int i=0; i<8; ++i) {
