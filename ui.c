@@ -534,8 +534,11 @@ void *ui_edit_tr_notes (void) {
             if (tpreset->lastnote > 2) {
                 lcd_printf ("..");
             }
+            else lcd_printf ("  ");
         }
+        else lcd.printf ("      ");
     }
+    else lcd_printf ("          ");
     lcd_hidecursor();
     
     button_event *e = button_manager_wait_event (0);
