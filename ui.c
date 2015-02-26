@@ -61,7 +61,7 @@ int ui_select (int curval, int xpos, int ypos, int len,
             
             case BTMASK_PLUS:
             case BTMASK_STK_RIGHT:
-                if ((valpos+1)<len) valpos++;
+                if ((valpos+1)<count) valpos++;
                 break;
             
             case BTMASK_SHIFT:
