@@ -118,7 +118,6 @@ void *ui_generic_choice_menu (int curval,
             case BTMASK_PLUS:
             case BTMASK_STK_CLICK:
                 button_manager_add_event (e->buttons, 0);
-                button_event_free (e);
                 *writeto = ui_select (curval, x, 1, len, count, names, values);
                 break;
                 
