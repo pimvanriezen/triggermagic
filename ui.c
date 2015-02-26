@@ -700,8 +700,8 @@ void *ui_edit_main (void) {
             
             case BTMASK_STK_LEFT:
             case BTMASK_LEFT:
-                choice = choice-1;
-                if (choice<0) choice = 2;
+                if (choice) choice = choice-1;
+                else choice = 2;
                 break;
             
             case BTMASK_STK_CLICK:
