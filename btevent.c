@@ -61,7 +61,7 @@ void button_manager_main (thread *t) {
         }
         else if (pressedcount && buttons != BTMASK_SHIFT) {
             if (BT.tick - lastchange > 20) {
-                if ((BT.tick & 3) == 0) {
+                if ((BT.tick & 1) == 0) {
                     button_manager_add_event (buttons, true);
                 }
             }
