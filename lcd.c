@@ -1,5 +1,8 @@
 #include "lcd.h"
 #include <pifacecad.h>
+#include <stdarg.h>
+#include <string.h>
+#include <stdint.h>
 
 /** Initialize the piface LCD subsystem, upload custom characters */
 void lcd_init (void) {
