@@ -29,11 +29,13 @@ void lcd_backlight_off (void) {
 /** Turn on visible cursor */
 void lcd_showcursor (void) {
     pifacecad_lcd_cursor_on();
+    pifacecad_lcd_blink_on();
 }
 
 /** Turn off visible cursor */
 void lcd_hidecursor (void) {
     pifacecad_lcd_cursor_off();
+    pifacecad_lcd_blink_off();
 }
 
 /** Move LCD cursor to home position */
