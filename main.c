@@ -27,6 +27,7 @@ void context_store_preset (void) {
 }
 
 int main (int argc, const char *argv[]) {
+    context_init();
     lcd_init();
     button_manager_init();
     ui_main();
