@@ -3,6 +3,15 @@
 #include <pifacecad.h>
 #include <stdlib.h>
 
+int musleep (uint64_t useconds) {
+    struct timespec ts = {
+        .tv_sec = (long int) (useconds / 1000000),
+        .tv_nsec = (long int) (useconds % 1000000) * 1000ul
+    };
+    
+    return nanosleep (&ts, NULL);
+}
+
 /** Initializes and spawns the button manager. Presumes the piface
   * has already been initialized through lcd_init().
   */
