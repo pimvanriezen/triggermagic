@@ -618,6 +618,11 @@ void *ui_edit_name (void) {
         lcd_setpos (crsr,0);
         lcd_showcursor ();
         
+        if (! CTX.preset.name[crsr]) {
+            CTX.preset.name[crsr] = ' ';
+            CTX.preset.name[crsr+1] = 0;
+        }
+        
         button_event *e = button_manager_wait_event (0);
         switch (e->buttons) {
             case BTMASK_LEFT:
@@ -695,6 +700,7 @@ void *ui_edit_main (void) {
             
             case BTMASK_SHIFT:
                 button_event_free (e);
+                context_store_preset();
                 return ui_performance;
         }
         button_event_free (e);
@@ -753,6 +759,7 @@ void *ui_performance (void) {
             break;
         
         case BTMASK_STK_CLICK:
+        case BTMASK_SHIFT | BTMASK_MINUS:
             button_event_free (e);
             return ui_edit_main;
             break;

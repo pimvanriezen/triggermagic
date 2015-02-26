@@ -13,8 +13,8 @@
 #define BTID_PLUS       3
 #define BTID_SHIFT      4
 #define BTID_STK_LEFT   5
-#define BTID_STK_RIGHT  6
-#define BTID_STK_CLICK  7
+#define BTID_STK_CLICK  6
+#define BTID_STK_RIGHT  7
 
 #define BTMASK_LEFT      (1 << BTID_LEFT)
 #define BTMASK_RIGHT     (1 << BTID_RIGHT)
