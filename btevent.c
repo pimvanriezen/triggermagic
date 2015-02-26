@@ -54,7 +54,7 @@ void button_manager_main (thread *t) {
         if (changed && pressedcount) {
             if ((!BT.useshift) || (buttons != BTMASK_SHIFT)) {
                 if ((buttons != BTMASK_SHIFT) ||
-                    (BT.states[BTID_SHIFT].lastchange == BT.tick) {
+                    (BT.states[BTID_SHIFT].lastchange == BT.tick)) {
                     button_manager_add_event (buttons, false);
                 }
             }
