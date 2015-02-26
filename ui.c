@@ -535,7 +535,7 @@ void *ui_edit_tr_notes (void) {
             }
             else lcd_printf ("  ");
         }
-        else lcd.printf ("      ");
+        else lcd_printf ("      ");
     }
     else lcd_printf ("          ");
     lcd_hidecursor();
