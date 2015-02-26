@@ -161,7 +161,7 @@ void* ui_edit_global (void) {
 
 /** Note names */
 const char *TB_NOTES[12] = {"C-","C#","D-","D#","E-","F-",
-                            "F#","G-","G#","A","A#","B-"};
+                            "F#","G-","G#","A-","A#","B-"};
 
 /** Write a note value to the LCD.
   * \param notenr The MIDI note number
