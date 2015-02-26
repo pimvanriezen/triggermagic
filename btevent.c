@@ -63,7 +63,7 @@ void button_manager_main (thread *t) {
             }
         }
         
-        usleep (50000);
+        musleep (50000);
         BT.tick++;
     }
 }
