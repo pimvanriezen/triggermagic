@@ -62,6 +62,18 @@ int ui_select (int curval, int xpos, int ypos, int len,
     }
 }
 
+/** Implements a generic LCD menu page that shows a multi-choice
+  * value that can be edited.
+  * \param curval The current real selected value
+  * \param prompt The prefix prompt (e.g., "Casualties:")
+  * \param count The number of options
+  * \param writeto Where to write the choice back to
+  * \param names Array of option names
+  * \param values Array of option values
+  * \param leftresult Which routine to jump to when navigating left.
+  * \param rightresult Which routine to jump to when navigating right.
+  * \param upresult The routine to jup to when navigating up the menu tree.
+  */
 void *ui_generic_choice_menu (int curval,
                               const char *prompt,
                               int count,
@@ -142,14 +154,19 @@ void ui_write_note (char notenr) {
     }
 }
 
-
-
+/** Determines what menu is to the right of 'velocity mode',
+  * depending on the selected mode. If it is set to
+  * VELO_INDIVIDUAL, a menu should appear for editing the
+  * individual velocities. Otherwise we should skip stright
+  * to the send configuration.
+  */
 void *ui_edit_nextfrom_tr_velocity_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     if (tpreset->vconf == VELO_INDIVIDUAL) return ui_edit_tr_velocities;
     return ui_edit_tr_sendconfig;
 }
 
+/** Menu for selecting the velocity mode */
 void *ui_edit_tr_velocity_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
