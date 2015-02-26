@@ -16,7 +16,7 @@ const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   * by returns.
   */
 void ui_main (void) {
-    uifunc call = ui_performance;
+    uifunc call = ui_splash;
     uifunc ncall = NULL;
     lcd_init();
     while (1) {
@@ -781,5 +781,13 @@ void *ui_performance (void) {
     }
     
     button_event_free (e);
+    return ui_performance;
+}
+
+void *ui_splash (void) {
+    lcd_home();
+    lcd_printf ("   \003\004 midilab    \n"
+                "  triggermagic  ");
+    sleep (5);
     return ui_performance;
 }

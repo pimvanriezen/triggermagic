@@ -8,12 +8,16 @@
 void lcd_init (void) {
     uint8_t sym_div[] = {8,0,8,0,8,0,8,0};
     uint8_t sym_qnote[] = {2,2,2,2,14,30,12,0};
-    uint8_t sym_velo[] = {4,4,4,4,21,14,4,0};    
+    uint8_t sym_velo[] = {4,4,4,4,21,14,4,0};
+    uint8_t sym_spk1[] = {1,3,31,31,31,3,1,0};
+    uint8_t sym_spk2[] = {	2,9,5,21,5,9,2,0};   
     pifacecad_open();
     lcd_backlight_on();
     pifacecad_lcd_store_custom_bitmap (0, sym_div);
     pifacecad_lcd_store_custom_bitmap (1, sym_qnote);
     pifacecad_lcd_store_custom_bitmap (2, sym_velo);
+    pifacecad_lcd_store_custom_bitmap (3, sym_spk1);
+    pifacecad_lcd_store_custom_bitmap (4, sym_spk2);
 }
 
 /** Turn on LCD backlight */
