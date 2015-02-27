@@ -4,7 +4,7 @@ bool midi_available (void) {
     /* Don't use portmidi yet, or it will be bound to the non-working
        situation */
     
-    if (system ("/home/pi/checkmidi.sh")) return false;
+    if (system ("/usr/bin/amidi -l | grep -q ^IO")) return false;
     return true;
     /*
     int devcount = Pm_CountDevices();
