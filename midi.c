@@ -1,6 +1,6 @@
 #include "midi.h"
 
-bool midi_available (void);
+bool midi_available (void) {
     int devcount = Pm_CountDevices();
     
     /* Wimp out if only the ALSA ports are available */
