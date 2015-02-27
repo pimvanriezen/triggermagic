@@ -210,7 +210,7 @@ void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (0,11);
+    lcd_setpos (11,0);
     lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->move,
                                    "Move:",
@@ -244,7 +244,7 @@ void *ui_edit_tr_seq_range (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (0,11);
+    lcd_setpos (11,0);
     lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->range,
                                    "Range:",
@@ -270,7 +270,7 @@ void *ui_edit_tr_seq_gate (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (0,11);
+    lcd_setpos (11,0);
     lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->sgate,
                                    "Gate:",
@@ -304,7 +304,7 @@ void *ui_edit_tr_seq_length (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (0,11);
+    lcd_setpos (11,0);
     lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Length:",
@@ -332,7 +332,7 @@ void *ui_edit_tr_notes_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (0,11);
+    lcd_setpos (11,0);
     lcd_printf ("[NTE]\n");
     return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Mode:",
