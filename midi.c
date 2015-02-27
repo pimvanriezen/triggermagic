@@ -12,7 +12,7 @@ bool midi_available (void) {
     for (int i=2; i<devcount; ++i) {
         const PmDeviceInfo *d = Pm_GetDeviceInfo (i);
         numinputs += d->input;
-        numoutsputs += d->output;
+        numoutputs += d->output;
     }
     
     if (! numinputs) return false;
