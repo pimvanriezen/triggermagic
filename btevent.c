@@ -84,7 +84,7 @@ void button_manager_main (thread *t) {
             midi_in = true;
             button_manager_add_event (BTMASK_MDIN_ON, false);
         }
-        else if (midi_in && (BT.tick - BT.tick_midi_in > 1)) {
+        else if (midi_in && (BT.tick - BT.tick_midi_in > 4)) {
             midi_in = false;
             button_manager_add_event (BTMASK_MDIN_OFF, false);
         }
@@ -92,7 +92,7 @@ void button_manager_main (thread *t) {
             midi_out = true;
             button_manager_add_event (BTMASK_MDOUT_ON, false);
         }
-        else if (midi_out && (BT.tick - BT.tick_midi_out >1)) {
+        else if (midi_out && (BT.tick - BT.tick_midi_out >4)) {
             midi_out = false;
             button_manager_add_event (BTMASK_MDOUT_OFF, false);
         }
