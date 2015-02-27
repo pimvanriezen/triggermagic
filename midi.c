@@ -3,6 +3,11 @@
 #include "thread.h"
 #include "btevent.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 static bool initialized = false;
 
 static struct midistate {
