@@ -635,7 +635,7 @@ void *ui_edit_tr_notecount (void) {
 /** Trigger selection menu. */
 void *ui_edit_trig (void) {
     lcd_home();
-    lcd_printf ("%02i|Edit Triggers\n  |Trigger: %02i   ",   
+    lcd_printf ("%02i|Edit Triggers\n  |Trigger %i    ",   
                 CTX.preset_nr,
                 CTX.trigger_nr+1);
         
@@ -725,7 +725,7 @@ void *ui_edit_name (void) {
 /** Edit main menu */
 void *ui_edit_main (void) {
     uint8_t choice = 0;
-    const char *ch_name[3] = {"Edit name","Triggers","System"};
+    const char *ch_name[3] = {"Edit name","Edit Triggers","System Setup"};
     uifunc ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
     while (1) {
         lcd_home();
