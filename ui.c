@@ -209,7 +209,9 @@ void ui_write_note (char notenr) {
 void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
+    lcd_setpos (0,11);
+    lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->move,
                                    "Move:",
                                    7,
@@ -241,7 +243,9 @@ void *ui_edit_tr_seq_move (void) {
 void *ui_edit_tr_seq_range (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
+    lcd_setpos (0,11);
+    lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->range,
                                    "Range:",
                                    3,
@@ -265,7 +269,9 @@ void *ui_edit_tr_seq_range (void) {
 void *ui_edit_tr_seq_gate (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
+    lcd_setpos (0,11);
+    lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int) tpreset->sgate,
                                    "Gate:",
                                    7,
@@ -297,7 +303,9 @@ void *ui_edit_tr_seq_gate (void) {
 void *ui_edit_tr_seq_length (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i  Seq\n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
+    lcd_setpos (0,11);
+    lcd_printf ("[SEQ]\n");
     return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Length:",
                                    4,
@@ -323,7 +331,9 @@ void *ui_edit_tr_seq_length (void) {
 void *ui_edit_tr_notes_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i Note\n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
+    lcd_setpos (0,11);
+    lcd_printf ("[NTE]\n");
     return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Mode:",
                                    6,
@@ -369,7 +379,7 @@ void *ui_edit_nextfrom_tr_sendconfig (void) {
 void *ui_edit_tr_sendconfig (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
     return ui_generic_choice_menu ((int)tpreset->send,
                                    "Send:",
                                    2,
@@ -438,7 +448,7 @@ void *ui_edit_velocities (void) {
 void *ui_edit_tr_velocities (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
     lcd_printf ("\002 %3i", tpreset->velocities[0]);
     if (tpreset->lastnote) {
         lcd_printf ("%3i ", tpreset->velocities[1]);
@@ -496,7 +506,7 @@ void *ui_edit_nextfrom_tr_velocity_mode (void) {
 void *ui_edit_tr_velocity_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
     return ui_generic_choice_menu ((int)tpreset->vconf,
                                    "Velocity:",
                                    6,
@@ -573,7 +583,7 @@ void *ui_edit_notes (void) {
 void *ui_edit_tr_notes (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
     lcd_printf ("\001 ");
     ui_write_note (tpreset->notes[0]);
     if (tpreset->lastnote) {
@@ -619,7 +629,7 @@ void *ui_edit_tr_notes (void) {
 void *ui_edit_tr_notecount (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger: %02i      \n", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
     return ui_generic_choice_menu ((int)tpreset->lastnote,
                                    "# Notes:",
                                    8,
