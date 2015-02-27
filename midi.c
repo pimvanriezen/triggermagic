@@ -55,6 +55,10 @@ void midi_read_thread (thread *t) {
             if (Pm_Poll (self.in) == TRUE) {
                 count = Pm_Read (self.in, buffer, 16);
                 if (count) {
+                    for (int i=0; i<count; ++i) {
+                        printf ("%08x ", buffer[i].message);
+                    }
+                    printf ("\n");
                     button_manager_flash_midi_in();
                 }
             }
