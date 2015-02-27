@@ -2,6 +2,7 @@
 #define _THREAD_H 1
 
 #include <pthread.h>
+#include <stdint.h>
 
 /* =============================== TYPES =============================== */
 
