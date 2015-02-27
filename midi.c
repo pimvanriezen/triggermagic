@@ -93,6 +93,7 @@ void midi_set_input_device (int devid) {
     }
     
     Pm_OpenInput (&self.in, devid, NULL, 16, NULL, NULL);
+    Pm_SetFilter(&self.in, PM_FILT_ACTIVE | PM_FILT_SYSEX);
     pthread_mutex_unlock (&self.in_lock);
 }
 
