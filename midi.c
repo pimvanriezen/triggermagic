@@ -9,7 +9,6 @@ bool midi_available (void) {
     /*
     int devcount = Pm_CountDevices();
     
-    /* Wimp out if only the ALSA ports are available */
     if (devcount <= 2) return false;
     
     int numinputs = 0;
