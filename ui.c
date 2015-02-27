@@ -845,5 +845,5 @@ void *ui_splash (void) {
     lcd_printf ("   \003\004 midilab    \n"
                 "  triggermagic  ");
     sleep (5);
-    return ui_performance;
+    return ui_waitmidi;
 }
