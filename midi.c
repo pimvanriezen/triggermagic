@@ -21,10 +21,6 @@ static struct midistate {
     char             out_devicename[256];
 } self;
 
-static bool              midi_open = false;
-static pthread_mutext_t  midi_lock;
-
-
 bool midi_available (void) {
     /* Don't use portmidi yet, or it will be bound to the non-working
        situation */
