@@ -35,6 +35,7 @@ void    *ui_edit_trig (void);
 void    *ui_edit_name (void);
 void    *ui_edit_main (void);
 void    *ui_performance (void);
+void    *ui_waitmidi (void);
 void    *ui_splash (void);
 
 #endif

@@ -7,6 +7,7 @@
 #include "lcd.h"
 #include "presets.h"
 #include "btevent.h"
+#include "midi.h"
 
 /** Usable character set for preset names */
 const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -822,6 +823,20 @@ void *ui_performance (void) {
     
     button_event_free (e);
     return ui_performance;
+}
+
+void *ui_waitmidi (void) {
+    if (midi_available()) return ui_performance;
+    lcd_setpos (0,1);
+    lcd_printf ("Plug in USB-MIDI");
+    sleep (1);
+    if (midi_available()) return ui_performance;
+    sleep (1);
+    if (midi_available()) return ui_performance;
+    lcd_setpos (0,1);
+    lcd_printf ("                ");
+    sleep (1);
+    return ui_waitmidi;
 }
 
 /** Show splash screen, then jump to performance menu */
