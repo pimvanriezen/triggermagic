@@ -583,7 +583,7 @@ void *ui_edit_notes (void) {
 void *ui_edit_tr_notes (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
-    lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i          \n", CTX.trigger_nr+1);
     lcd_printf ("\001 ");
     ui_write_note (tpreset->notes[0]);
     if (tpreset->lastnote) {
