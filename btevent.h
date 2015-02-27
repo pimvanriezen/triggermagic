@@ -26,7 +26,7 @@
 #define BTMASK_STK_CLICK (1 << BTID_STK_CLICK)
 
 #define BTMASK_MDIN_ON   0xf0
-#define BTMASJ_MDIN_OFF  0xf1
+#define BTMASK_MDIN_OFF  0xf1
 #define BTMASK_MDOUT_ON  0xf2
 #define BTMASK_MDOUT_OFF 0xf3
 
