@@ -47,14 +47,15 @@ bool midi_available (void) {
 }
 
 void midi_read_thread (thread *t) {
-    PmEvent buffer[16];
+    PmEvent buffer[128];
     int count;
     while (1) {
         pthread_mutex_lock (&self.in_lock);
         if (self.in) {
             if (Pm_Poll (self.in) == TRUE) {
-                count = Pm_Read (self.in, buffer, 16);
+                count = Pm_Read (self.in, buffer, 128);
                 if (count) {
+                    printf ("%i ", count);
                     for (int i=0; i<count; ++i) {
                         printf ("%08x ", buffer[i].message);
                     }
