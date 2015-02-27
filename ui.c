@@ -773,12 +773,17 @@ void *ui_edit_main (void) {
     }
 }
 
+static bool light_midi_in = false;
+static bool light_midi_out = false;
+
 /** Main performance menu */
 void *ui_performance (void) {
     lcd_home();
-    lcd_printf ("%02i|%-13s\n  |\001 %3i     %s%c%i",   
+    lcd_printf ("%02i|%-13s\n%c%c|\001 %3i     %s%c%i",   
                 CTX.preset_nr,
                 CTX.preset.name,
+                light_midi_in ? '\005' : ' ',
+                light_midi_out ? '\006' : ' ',
                 CTX.preset.tempo,
                 (CTX.transpose<-9||CTX.transpose>9)?"":" ",
                 CTX.transpose<0?'-':'+',
@@ -786,6 +791,10 @@ void *ui_performance (void) {
     
     button_event *e = button_manager_wait_event (1);
     switch (e->buttons) {
+        case BTMASK_MDIN_ON: light_midi_in = true; break;
+        case BTMASK_MDIN_OFF: light_midi_in = false; break;
+        case BTMASK_MDOUT_ON: light_midi_out = true; break;
+        case BTMASK_MDOUT_OFF: light_midi_out = false; break;
         case BTMASK_SHIFT | BTMASK_RIGHT:
             if (CTX.transpose < 25) {
                 CTX.transpose++;
@@ -835,14 +844,20 @@ void *ui_performance (void) {
     return ui_performance;
 }
 
+void *ui_startmidi (void) {
+    midi_init();
+    midi_check_ports();
+    return ui_performance;
+}
+
 void *ui_waitmidi (void) {
-    if (midi_available()) return ui_performance;
+    if (midi_available()) return ui_startmidi;
     lcd_setpos (0,1);
     lcd_printf ("Plug in USB-MIDI");
     sleep (1);
-    if (midi_available()) return ui_performance;
+    if (midi_available()) return ui_startmidi;
     sleep (1);
-    if (midi_available()) return ui_performance;
+    if (midi_available()) return ui_startmidi;
     lcd_setpos (0,1);
     lcd_printf ("                ");
     sleep (1);

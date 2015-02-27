@@ -29,6 +29,7 @@ typedef struct thread_s {
 
 /* ============================= FUNCTIONS ============================= */
 
+int          musleep (uint64_t);
 void        *thread_spawn (void *);
 void         thread_init (thread *, run_f, cancel_f);
 thread      *thread_create (run_f, cancel_f);

@@ -4,6 +4,11 @@
 #include <portmidi.h>
 #include <stdbool.h>
 
+#include "thread.h"
+
 bool midi_available (void);
+void midi_read_thread (thread *);
+void midi_init (void);
+void midi_check_ports (void);
 
 #endif

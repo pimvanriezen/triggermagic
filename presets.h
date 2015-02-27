@@ -87,6 +87,9 @@ typedef struct context_global_s {
     preset           preset; /**< Working copy of loaded preset */
     int              transpose; /**< Current transpose */
     preset           presets[100]; /**< Stored presets 1-99 */
+    char             portname_midi_in[256];
+    char             portname_midi_out[256];
+    char             send_channel;
 } context_global;
 
 /* ============================== GLOBALS ============================== */

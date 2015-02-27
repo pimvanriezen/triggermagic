@@ -25,6 +25,11 @@
 #define BTMASK_STK_RIGHT (1 << BTID_STK_RIGHT)
 #define BTMASK_STK_CLICK (1 << BTID_STK_CLICK)
 
+#define BTMASK_MDIN_ON   0xf0
+#define BTMASJ_MDIN_OFF  0xf1
+#define BTMASK_MDOUT_ON  0xf2
+#define BTMASK_MDOUT_OFF 0xf3
+
 /** Event flowing out of the button manager. Represents a specific
     configuration of buttons pressed. */
 typedef struct button_event_s {
@@ -44,6 +49,8 @@ typedef struct button_manager_s {
     thread           super; /**< The thread this all runs on */
     button_state     states[8]; /**< State of buttons during this tick */
     uint64_t         tick; /**< Current tick number */
+    uint64_t         tick_midi_in; /**< Tick of last MIDI event */
+    uint64_t         tick_midi_out; /**< Tick of last MIDI out event */
     conditional      eventcond; /**< Conditional for new events */
     button_event    *first; /**< Linked-list head */
     button_event    *last; /**< Linked-list tail */
@@ -59,6 +66,8 @@ extern button_manager BT;
 
 void             button_manager_init (void);
 void             button_manager_main (thread *);
+void             button_manager_flash_midi_in (void);
+void             button_manager_flash_midi_out (void);
 void             button_manager_add_event (uint8_t, bool);
 button_event    *button_manager_wait_event (bool useshift);
 

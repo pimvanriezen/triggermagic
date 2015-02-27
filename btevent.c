@@ -27,6 +27,8 @@ void button_manager_init (void) {
         BT.states[i].lastchange = 0;
     }
     BT.tick = 0;
+    BT.tick_midi_in = 0;
+    BT.tick_midi_out = 0;
     conditional_init (&BT.eventcond);
     BT.first = BT.last = NULL;
     BT.useshift = true;
@@ -39,6 +41,9 @@ void button_manager_init (void) {
   */
 void button_manager_main (thread *t) {
     uint64_t lastchange = 0;
+    bool midi_in = false;
+    bool midi_out = false;
+    
     while (1) {
         uint8_t buttons = pifacecad_read_switches() ^ 0xff;
         bool changed = false;
@@ -75,9 +80,34 @@ void button_manager_main (thread *t) {
             }
         }
         
+        if ((!midi_in) && (BT.tick - BT.tick_midi_in < 2)) {
+            midi_in = true;
+            button_manager_add_event (BTMASK_MDIN_ON, false);
+        }
+        else if (midi_in && (BT.tick - BT.tick_midi_in >4)) {
+            midi_in = false;
+            button_manager_add_event (BTMASK_MDIN_OFF, false);
+        }
+        if ((!midi_out) && (BT.tick - BT.tick_midi_out < 2)) {
+            midi_out = true;
+            button_manager_add_event (BTMASK_MDOUT_ON, false);
+        }
+        else if (midi_out && (BT.tick - BT.tick_midi_out >4)) {
+            midi_out = false;
+            button_manager_add_event (BTMASK_MDOUT_OFF, false);
+        }
+        
         musleep (50000);
         BT.tick++;
     }
+}
+
+void button_manager_flash_midi_in (void) {
+    BT.tick_midi_in = BT.tick;
+}
+
+void button_manager_flash_midi_out (void) {
+    BT.tick_midi_out = BT.tick;
 }
 
 /** Adds a button event to the queue and signals any consumers.
