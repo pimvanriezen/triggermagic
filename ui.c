@@ -72,6 +72,9 @@ int ui_select (int curval, int xpos, int ypos, int len,
                 
             case BTMASK_LEFT:
             case BTMASK_RIGHT:
+                /* Interpret these lateral moves as a desire to stop
+                   editing and continue navigating. So jump back
+                   and reinsert the events */
                 button_manager_add_event (e->buttons, 0);
                 button_event_free (e);
                 lcd_hidecursor();
@@ -155,8 +158,35 @@ void *ui_generic_choice_menu (int curval,
     }
 }
 
+/** Placeholder */
 void* ui_edit_global (void) {
-    return ui_performance;
+    while (1) {
+        lcd_home();
+        lcd_printf ("%02i|System Setup  \n  |%-13s",   
+                    CTX.preset_nr,
+                    "FW rev: 1.0.0   ");
+        
+        button_event *e = button_manager_wait_event (0);
+        switch (e->buttons) {
+            case BTMASK_STK_RIGHT:
+            case BTMASK_RIGHT:
+                break;
+            
+            case BTMASK_STK_LEFT:
+            case BTMASK_LEFT:
+                break;
+            
+            case BTMASK_STK_CLICK:
+            case BTMASK_PLUS:
+            case BTMASK_MINUS:
+                break;
+            
+            case BTMASK_SHIFT:
+                button_event_free (e);
+                return ui_edit_main;
+        }
+        button_event_free (e);
+    }
 }
 
 /** Note names */
@@ -174,6 +204,7 @@ void ui_write_note (char notenr) {
     }
 }
 
+/** Menu for the sequence move parameter */
 void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -205,6 +236,7 @@ void *ui_edit_tr_seq_move (void) {
                                    ui_edit_trig);
 }
 
+/** Menu for the sequence range parameter */
 void *ui_edit_tr_seq_range (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -228,6 +260,7 @@ void *ui_edit_tr_seq_range (void) {
                                    ui_edit_trig);
 }
 
+/** Menu for the sequence gate parameter */
 void *ui_edit_tr_seq_gate (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -259,6 +292,7 @@ void *ui_edit_tr_seq_gate (void) {
                                    ui_edit_trig);
 }
 
+/** Menu for the sequence note length parameter */
 void *ui_edit_tr_seq_length (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -284,6 +318,7 @@ void *ui_edit_tr_seq_length (void) {
                                    ui_edit_trig);
 }
 
+/** Menu for the note trigger mode parameter */
 void *ui_edit_tr_notes_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -313,18 +348,23 @@ void *ui_edit_tr_notes_mode (void) {
                                    ui_edit_trig);
 }
 
+/** Determine previous menu from trigger send config. Depends on whether
+  * individual velocities should be shown. */
 void *ui_edit_prevfrom_tr_sendconfig (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     if (tpreset->vconf == VELO_INDIVIDUAL) return ui_edit_tr_velocities;
     return ui_edit_tr_velocity_mode;
 }
 
+/** Determines next menu from trigger send config. Depends on whether
+  * configured to send notes or a sequence. */
 void *ui_edit_nextfrom_tr_sendconfig (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     if (tpreset->send == SEND_NOTES) return ui_edit_tr_notes_mode;
     return ui_edit_tr_seq_length;
 }
 
+/** Menu for the note/sequence send configuration menu. */
 void *ui_edit_tr_sendconfig (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -340,8 +380,7 @@ void *ui_edit_tr_sendconfig (void) {
                                    ui_edit_trig);
 }
 
-
-
+/** Editor for individual velocities */
 void *ui_edit_velocities (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     int ncursor = 0;
@@ -394,6 +433,7 @@ void *ui_edit_velocities (void) {
     }
 }
 
+/** Display menu for individual velocities */
 void *ui_edit_tr_velocities (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
@@ -684,7 +724,7 @@ void *ui_edit_name (void) {
 /** Edit main menu */
 void *ui_edit_main (void) {
     uint8_t choice = 0;
-    const char *ch_name[3] = {"Edit name","Triggers","Global"};
+    const char *ch_name[3] = {"Edit name","Triggers","System"};
     uifunc ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
     while (1) {
         lcd_home();
@@ -784,6 +824,7 @@ void *ui_performance (void) {
     return ui_performance;
 }
 
+/** Show splash screen, then jump to performance menu */
 void *ui_splash (void) {
     lcd_home();
     lcd_printf ("   \003\004 midilab    \n"

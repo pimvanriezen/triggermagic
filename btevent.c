@@ -6,6 +6,9 @@
 
 button_manager BT;
 
+/** Microsleeper. If someone can explain why gcc hates both usleep() and
+  * nanosleep() under C99 and not sound like a douche, they win a prize.
+  */
 int musleep (uint64_t useconds) {
     struct timespec ts = {
         .tv_sec = (long int) (useconds / 1000000),
@@ -53,6 +56,11 @@ void button_manager_main (thread *t) {
         }
         if (changed && pressedcount) {
             if ((!BT.useshift) || (buttons != BTMASK_SHIFT)) {
+                /* If shift is to be treated as 'just a key', reject it
+                 * if the only reason it is pressed is in the aftermath
+                 * of using it in a combination. So only propagate
+                 * it if it's state of being pressed happened during
+                 * the last overall state change. */
                 if ((buttons != BTMASK_SHIFT) ||
                     (BT.states[BTID_SHIFT].lastchange == BT.tick)) {
                     button_manager_add_event (buttons, false);
