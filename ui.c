@@ -889,7 +889,7 @@ void *ui_splash (void) {
                 "  triggermagic  ");
     
     for (int i=0; i<24; ++i) {
-        musleep (5000000/128);
+        musleep (5000000/64);
         int pos = rand() & 15;
         tmagic[pos] = toupper (tmagic[pos]);
         lcd_setpos (0,1);
