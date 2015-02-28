@@ -21,6 +21,18 @@ void context_init (void) {
     CTX.presets[1].triggers[7].notes[0] = 62;
     CTX.presets[1].triggers[8].notes[0] = 63;
     context_load_preset (1);
+    
+    for (int cpre=2; cpre<100; ++cpre) {
+        strcpy (CTX.presets[cpre].name, "Init         ");
+        CTX.presets[cpre].tempo = 125;
+        for (int i=0; i<12; ++i) {
+            triggerpreset *tp = &CTX.presets[cpre].triggers[i];
+            tp->slen = 8;
+            tp->movetype = MOVE_UP;
+            tp->notes[0] = 48+i;
+        }
+    }
+    
     FILE *pst = fopen ("/home/pi/triggermagic.presets","r");
     if (pst) {
         fread (CTX.presets, sizeof(preset), 100, pst);
