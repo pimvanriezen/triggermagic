@@ -54,7 +54,9 @@ void midi_send_noteon (char note, char velocity) {
     printf ("noteon %i (%i)\n", note, velocity);
     char channel = CTX.send_channel;
     long msg = 0x90 | channel | ((long) note << 8) | (long) velocity << 16;
+    pthread_mutex_lock (&self.out_lock);
     Pm_WriteShort (self.out, 0, msg);
+    pthread_mutex_unlock (&self.out_lock);
     self.noteon[note] = true;
     button_manager_flash_midi_out();
 }
