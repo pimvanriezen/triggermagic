@@ -9,39 +9,44 @@
 #include <unistd.h>
 #include <time.h>
 
+/** Global initialization state */
 static bool initialized = false;
 
+/** State of an individual trigger */
 typedef struct triggerstate_s {
-    bool             gate;
+    bool             gate; /**< True if key is down */
     uint64_t         ts; /**< time of noteon */
-    char             seqpos;
-    uint64_t         looppos;
-    char             velocity;
-    char             gateperc;
+    char             seqpos; /**< Current position in the sequence */
+    uint64_t         looppos; /**< Number of steps since first trigger */
+    char             velocity; /**< Recorded trigger velocity */
+    char             gateperc; /**< Determined gate length% if applicable */
 } triggerstate;
 
+/** State of the MIDI system */
 static struct midistate {
-    thread          *receive_thread;
-    thread          *send_thread;
-    bool             open;
-    pthread_mutex_t  in_lock;
-    pthread_mutex_t  out_lock;
-    pthread_mutex_t  seq_lock;
-    PortMidiStream  *in;
-    PortMidiStream  *out;
-    char             in_devicename[256];
-    char             out_devicename[256];
-    int              current;
-    triggerstate     trig[12];
-    bool             noteon[128];
+    thread          *receive_thread; /**< MIDI receive loop */
+    thread          *send_thread; /**< MIDI send loop for gates/sequences */
+    bool             open; 
+    pthread_mutex_t  in_lock; /**< Lock on input stream */
+    pthread_mutex_t  out_lock; /**< Lock on output stream */
+    pthread_mutex_t  seq_lock; /**< Lock on sequencer state */
+    PortMidiStream  *in; /**< MIDI input stream */
+    PortMidiStream  *out; /**< MIDI output stream */
+    char             in_devicename[256]; /**< Current MIDI device name */
+    char             out_devicename[256]; /**< Current MIDI device name */
+    int              current; /**< Currently active trigger */
+    triggerstate     trig[12]; /**< State for all triggers */
+    bool             noteon[128]; /**< Note-on states of MIDI output */
 } self;
 
+/** Return the current time in milliseconds since epoch */
 uint64_t getclock (void) {
     struct timespec ts;
     clock_gettime (CLOCK_MONOTONIC_RAW, &ts);
     return ((ts.tv_sec * 1000ULL) + (ts.tv_nsec / 1000000ULL));
 }
 
+/** Poll ALSA for an available MIDI port */
 bool midi_available (void) {
     /* Don't use portmidi yet, or it will be bound to the non-working
        situation */
@@ -50,6 +55,7 @@ bool midi_available (void) {
     return true;
 }
 
+/** Send a Note On message to the MIDI output */
 void midi_send_noteon (char note, char velocity) {
     if (! note) return;
     char channel = CTX.send_channel;
@@ -60,10 +66,15 @@ void midi_send_noteon (char note, char velocity) {
         Pm_WriteShort (self.out, 0, msg);
     }
     pthread_mutex_unlock (&self.out_lock);
+    
+#ifdef DEBUG_MIDI
     printf ("NoteOn %i %i\n", note, velocity);
+#endif
+
     button_manager_flash_midi_out();
 }
 
+/** Send a Note Off message to the MIDI output */
 void midi_send_noteoff (char note) {
     if (! note) return;
     char channel = CTX.send_channel;
@@ -72,9 +83,15 @@ void midi_send_noteoff (char note) {
     Pm_WriteShort (self.out, 0, msg);
     self.noteon[note] = false;
     pthread_mutex_unlock (&self.out_lock);
+    
+#ifdef DEBUG_MIDI
     printf ("NoteOff %i\n", note);
+#endif
 }
 
+/** Perform a sequencer step, then advance it to the next note.
+  * \param ti The selected trigger
+  */
 void midi_send_sequencer_step (int ti) {
     triggerpreset *T = &CTX.preset.triggers[ti];
 
@@ -202,6 +219,11 @@ void midi_send_sequencer_step (int ti) {
     if (self.current == ti) midi_send_noteon (T->notes[i], velocity);
 }
 
+/** Respond to a Note Off event on the MIDI input. Only triggers that
+  * are configured as SEND_NOTES with the mode set to NMODE_GATE will
+  * need to respond to these. In other situations, the gate is
+  * controlled by the sequencer.
+  */
 void midi_noteoff_response (int trig) {
     triggerpreset *T = &CTX.preset.triggers[trig];
     if (T->send == SEND_NOTES && T->nmode == NMODE_GATE) {
@@ -214,6 +236,9 @@ void midi_noteoff_response (int trig) {
     }
 }
 
+/** Respond to a Note On event on the MIDI input. Either plays the
+  * direct note or chords, or sets up the trigger state for the
+  * sequencer to pick up. */
 void midi_noteon_response (int trig, char velo) {
     int i;
     for (i=0; i<128; ++i) {
@@ -270,6 +295,8 @@ void midi_noteon_response (int trig, char velo) {
     }
 }
 
+/** Thread that polls the incoming MIDI port, dispatching Note On and
+  * Off messages further into the system */
 void midi_receive_thread (thread *t) {
     char trigmatch[12] = {0x24,0x26,0x2b,0x2f,0x32,0x25,0x27,0x2a,
                           0x2e,0x31,0x33,0x34};
@@ -315,6 +342,7 @@ void midi_receive_thread (thread *t) {
     }
 }
 
+/** Thread that handles the programmed gate and sequencer. */
 void midi_send_thread (thread *t) {
     while (1) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
@@ -380,6 +408,7 @@ void midi_send_thread (thread *t) {
     }
 }
 
+/** Initialize internal information and start threads */
 void midi_init (void) {
     if (! initialized) {
         for (int i=0; i<128; ++i) self.noteon[i] = false;
@@ -396,6 +425,7 @@ void midi_init (void) {
     }
 }
 
+/** Set, or change, the PortMidi device to use for input */
 void midi_set_input_device (int devid) {
     pthread_mutex_lock (&self.in_lock);
     if (self.in) {
@@ -408,6 +438,7 @@ void midi_set_input_device (int devid) {
     pthread_mutex_unlock (&self.in_lock);
 }
 
+/** Set, or change, the PortMidi device to use for output */
 void midi_set_output_device (int devid) {
     pthread_mutex_lock (&self.out_lock);
     if (self.out) {
@@ -419,6 +450,9 @@ void midi_set_output_device (int devid) {
     pthread_mutex_unlock (&self.out_lock);
 }
 
+/** Check configuration for preferred MIDI ports. Hook up the first
+  * physical In and Out ports if nothing seems configued.
+  */
 void midi_check_ports (void) {
     int devcount = Pm_CountDevices();
     if (! self.in_devicename[0]) {

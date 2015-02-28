@@ -790,7 +790,10 @@ void *ui_edit_main (void) {
     }
 }
 
+/** Status indicator for midi receive */
 static bool light_midi_in = false;
+
+/** Status indicator for midi send */
 static bool light_midi_out = false;
 
 /** Main performance menu */
@@ -861,12 +864,16 @@ void *ui_performance (void) {
     return ui_performance;
 }
 
+/** Start the MIDI show, then jump to performance menu */
 void *ui_startmidi (void) {
     midi_init();
     midi_check_ports();
     return ui_performance;
 }
 
+/** Polls ALSA for an available MIDI port prior to starting the
+  * MIDI-related threads.
+  */
 void *ui_waitmidi (void) {
     if (midi_available()) return ui_startmidi;
     lcd_setpos (0,1);
