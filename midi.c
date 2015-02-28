@@ -226,6 +226,8 @@ void midi_noteon_response (int trig, char velo) {
     self.trig[trig].velocity = velo;
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
     
+    pthread_mutex_unlock (&self.seq_lock);
+
     triggerpreset *T = &CTX.preset.triggers[trig];
     int ntcount = T->lastnote+1;
     if (T->send != SEND_SEQUENCE) {
@@ -263,7 +265,6 @@ void midi_noteon_response (int trig, char velo) {
             }
         }
     }
-    pthread_mutex_unlock (&self.seq_lock);
 }
 
 void midi_receive_thread (thread *t) {
