@@ -184,8 +184,8 @@ void midi_send_sequencer_step (int ti) {
             velocity = 100;
             break;
     }
-    
-    midi_send_noteon (T->notes[i], velocity);
+
+    if (self.current == ti) midi_send_noteon (T->notes[i], velocity);
 }
 
 void midi_noteoff_response (int trig) {
