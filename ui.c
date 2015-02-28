@@ -888,8 +888,8 @@ void *ui_splash (void) {
     lcd_printf ("   \003\004 midilab    \n"
                 "  triggermagic  ");
     
-    for (int i=0; i<13; ++i) {
-        musleep (5000000/13);
+    for (int i=0; i<16; ++i) {
+        musleep (5000000/32);
         tmagic[i] = toupper (tmagic[i]);
         lcd_setpos (0,1);
         lcd_printf (tmagic);
