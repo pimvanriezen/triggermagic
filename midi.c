@@ -98,8 +98,8 @@ void midi_panic (void) {
 
 void midi_stop_sequencer (void) {
     pthread_mutex_lock (&self.seq_lock);
+    if (self.current>=0) self.trig[self.current].ts = getclock() + 5000;
     self.current = -1;
-    self.ts = getclock() + 5000;
     midi_panic();
     pthread_mutex_unlock (&self.seq_lock);
 }
