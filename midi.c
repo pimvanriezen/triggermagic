@@ -53,6 +53,7 @@ void midi_send_noteon (char note, char velocity) {
     char channel = CTX.send_channel;
     long msg = 0x90 | channel | ((long) note << 8) | (long) velocity << 16;
     Pm_WriteShort (self.out, 0, msg);
+    button_manager_flash_midi_out();
 }
 
 void midi_send_noteoff (char note) {
@@ -251,7 +252,6 @@ void midi_receive_thread (thread *t) {
             if (Pm_Poll (self.in) == TRUE) {
                 count = Pm_Read (self.in, buffer, 128);
                 if (count) {
-                    printf ("%i ", count);
                     for (int i=0; i<count; ++i) {
                         long msg = buffer[i].message;
                         bool noteon;
@@ -272,7 +272,6 @@ void midi_receive_thread (thread *t) {
                             }
                         }
                     }
-                    printf ("\n");
                     button_manager_flash_midi_in();
                 }
             }
