@@ -264,6 +264,7 @@ void midi_noteon_response (int trig, char velo) {
             
             if (self.current == trig) {
                 midi_send_noteon (T->notes[i], velocity);
+                self.trig[trig].ts = getclock();
             }
         }
     }
