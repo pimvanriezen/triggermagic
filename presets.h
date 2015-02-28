@@ -32,7 +32,7 @@ typedef enum {
 
 /** Arpeggiated range of the sequence */
 typedef enum {
-    RANGE_ORIG, /**< Use original range */
+    RANGE_ORIG = 0, /**< Use original range */
     RANGE_1_OCT, /**< Add a second loop up an octave */
     RANGE_2_OCT /**< Add a third loop up two octaves */
 } sequencerange;
