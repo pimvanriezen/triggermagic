@@ -228,10 +228,7 @@ void midi_noteon_response (int trig, char velo) {
     
     triggerpreset *T = &CTX.preset.triggers[trig];
     int ntcount = T->lastnote+1;
-    if (T->send == SEND_SEQUENCE) {
-        midi_send_sequencer_step (trig);
-    }
-    else {
+    if (T->send != SEND_SEQUENCE) {
         for (i=0; i<ntcount; ++i) {
             char velocity = 0;
             
