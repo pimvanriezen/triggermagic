@@ -144,8 +144,13 @@ void midi_send_sequencer_step (int ti) {
         
         printf ("%i ->", self.trig[ti].seqpos);
         
-        if (self.trig[ti].seqpos < 0) self.trig[ti].seqpos = T->lastnote;
-        else if (self.trig[ti].seqpos > T->lastnote) self.trig[ti].seqpos = 0;
+        if ((self.trig[ti].seqpos < 0) ||
+            (self.trig[ti].seqpos == 255)) {
+            self.trig[ti].seqpos = T->lastnote;
+        }
+        else if (self.trig[ti].seqpos > T->lastnote) {
+            self.trig[ti].seqpos = 0;
+        }
    
        printf ("%i\n", self.trig[ti].seqpos);
  }
