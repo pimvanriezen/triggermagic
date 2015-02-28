@@ -26,6 +26,7 @@ static struct midistate {
     bool             open;
     pthread_mutex_t  in_lock;
     pthread_mutex_t  out_lock;
+    pthread_mutex_t  seq_lock;
     PortMidiStream  *in;
     PortMidiStream  *out;
     char             in_devicename[256];
@@ -212,6 +213,7 @@ void midi_noteon_response (int trig, char velo) {
     self.trig[trig].gate = true;
     self.trig[trig].ts = getclock();
     self.trig[trig].velocity = velo;
+    pthread_mutex_lock (&self.seq_lock);
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
     
     triggerpreset *T = &CTX.preset.triggers[trig];
@@ -254,6 +256,7 @@ void midi_noteon_response (int trig, char velo) {
             }
         }
     }
+    pthread_mutex_unlock (&self.seq_lock);
 }
 
 void midi_receive_thread (thread *t) {
@@ -335,6 +338,7 @@ void midi_send_thread (thread *t) {
                 }
             }
             else if (T->send == SEND_SEQUENCE) {
+                pthread_mutex_lock (&self.seq_lock);
                 uint64_t notelen = qnote;
                 uint64_t gatelen;
                 char note = T->notes[self.trig[c].seqpos];
@@ -359,6 +363,7 @@ void midi_send_thread (thread *t) {
                 if (dif >= next_offs) {
                     midi_send_sequencer_step (c);
                 }
+                pthread_mutex_unlock (&self.seq_lock);
             }
         }
     }
@@ -369,6 +374,7 @@ void midi_init (void) {
         for (int i=0; i<128; ++i) self.noteon[i] = false;
         pthread_mutex_init (&self.in_lock, NULL);
         pthread_mutex_init (&self.out_lock, NULL);
+        pthread_mutex_init (&self.seq_lock, NULL);
         self.in = NULL;
         self.out = NULL;
         self.current = -1;
