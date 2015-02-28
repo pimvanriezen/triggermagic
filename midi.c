@@ -66,7 +66,9 @@ void midi_send_noteoff (char note) {
     printf ("noteoff %i\n", note);
     char channel = CTX.send_channel;
     long msg = 0x91 | channel | ((long) note << 8);
+    pthread_mutex_lock (&self.out_lock);
     Pm_WriteShort (self.out, 0, msg);
+    pthread_mutex_unlock (&self.out_lock);
     self.noteon[note] = false;
 }
 
