@@ -180,7 +180,7 @@ void midi_send_sequencer_step (int ti) {
 
 void midi_noteoff_response (int trig) {
     triggerpreset *T = &CTX.preset.triggers[trig];
-    if (T->send = SEND_NOTES && T->nmode == NMODE_GATE) {
+    if (T->send == SEND_NOTES && T->nmode == NMODE_GATE) {
         for (int i=0; i<128; ++i) {
             if (self.noteon[i]) midi_send_noteoff (i);
         }
