@@ -105,6 +105,8 @@ void midi_send_sequencer_step (int ti) {
                 self.trig[ti].gateperc = (int) T->sgate;
                 break;
         }
+        
+        printf ("move %i ->", self.trig[ti].seqpos);
     
         switch (T->move) {
             case MOVE_SINGLE:
@@ -144,7 +146,9 @@ void midi_send_sequencer_step (int ti) {
         
         if (self.trig[ti].seqpos < 0) self.trig[ti].seqpos = T->lastnote;
         else if (self.trig[ti].seqpos > T->lastnote) self.trig[ti].seqpos = 0;
-    }
+   
+       printf ("%i\n", self.trig[ti].seqpos);
+ }
     else {
         switch (T->move) {
             case MOVE_LOOP_DOWN:
