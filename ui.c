@@ -750,7 +750,7 @@ void *ui_edit_name (void) {
                     CTX.preset.name[crsr-1] != ' ') {
                     CTX.preset.name[crsr] = CTX.preset.name[crsr-1];
                 }
-                if (CTX.preset.name[crsr] != '@') {
+                else if (CTX.preset.name[crsr] != '@') {
                     const char *pos = strchr (CSET, CTX.preset.name[crsr]);
                     if (! pos) {
                         CTX.preset.name[crsr] = '@';
