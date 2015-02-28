@@ -96,6 +96,14 @@ void midi_panic (void) {
     }
 }
 
+void midi_stop_sequencer (void) {
+    pthread_mutex_lock (&self.seq_lock);
+    self.current = -1;
+    self.ts = getclock() + 5000;
+    midi_panic();
+    pthread_mutex_unlock (&self.seq_lock);
+}
+
 /** Perform a sequencer step, then advance it to the next note.
   * \param ti The selected trigger
   */

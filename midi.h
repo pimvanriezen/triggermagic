@@ -8,6 +8,7 @@
 
 bool midi_available (void);
 void midi_panic (void);
+void midi_stop_sequencer (void);
 void midi_init (void);
 void midi_check_ports (void);
 

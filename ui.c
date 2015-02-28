@@ -830,7 +830,7 @@ void *ui_performance (void) {
         case BTMASK_STK_RIGHT:
         case BTMASK_RIGHT:
             if (CTX.preset_nr < 99) {
-                midi_panic();
+                midi_stop_sequencer();
                 context_load_preset (CTX.preset_nr + 1);
             }
             break;
@@ -838,7 +838,7 @@ void *ui_performance (void) {
         case BTMASK_STK_LEFT:
         case BTMASK_LEFT:
             if (CTX.preset_nr > 1) {
-                midi_panic();
+                midi_stop_sequencer();
                 context_load_preset (CTX.preset_nr - 1);
             }
             break;
