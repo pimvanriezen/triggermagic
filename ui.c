@@ -306,10 +306,10 @@ void *ui_edit_tr_seq_length (void) {
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
     lcd_setpos (11,0);
     lcd_printf ("[SEQ]\n");
-    return ui_generic_choice_menu ((int)tpreset->nmode,
+    return ui_generic_choice_menu ((int)tpreset->slen,
                                    "Length:",
                                    4,
-                                   (int *)&tpreset->nmode,
+                                   (int *)&tpreset->slen,
                                    (const char *[]){
                                         "1/2",
                                         "1/4",
