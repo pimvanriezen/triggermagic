@@ -191,10 +191,11 @@ void midi_send_sequencer_step (int ti) {
 void midi_noteoff_response (int trig) {
     triggerpreset *T = &CTX.preset.triggers[trig];
     if (T->send == SEND_NOTES && T->nmode == NMODE_GATE) {
-        printf ("gate\n");
-        for (int i=0; i<128; ++i) {
-            if (self.noteon[i]) midi_send_noteoff (i);
+        for (int i=0; i<=T->lastnote; ++i) {
+            char note = T->notes[i];
+            if (self.noteon[note]) midi_send_noteoff (note);
         }
+        printf ("gate\n");
         self.trig[trig].gate = false;
     }
 }
