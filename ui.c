@@ -563,7 +563,7 @@ void *ui_edit_notes (void) {
             
             case BTMASK_MINUS | BTMASK_SHIFT:
                 if (tpreset->notes[ncursor]>11) {
-                    tpreset->notes[ncursor] -= 12;
+                    tpreset->notes[ncursor] -= 11;
                 }
                 break;
             
@@ -576,7 +576,7 @@ void *ui_edit_notes (void) {
                 
             case BTMASK_PLUS | BTMASK_SHIFT:
                 if (tpreset->notes[ncursor] < 115) {
-                    tpreset->notes[ncursor] += 12;
+                    tpreset->notes[ncursor] += 11;
                 }
                 break;
                 
