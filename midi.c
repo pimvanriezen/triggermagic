@@ -220,7 +220,7 @@ void midi_noteon_response (int trig, char velo) {
     
     self.current = trig;
     self.trig[trig].gate = true;
-    self.trig[trig].ts = getclock();
+    self.trig[trig].ts = getclock()+2;
     self.trig[trig].velocity = velo;
     pthread_mutex_lock (&self.seq_lock);
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
