@@ -62,12 +62,12 @@ void midi_send_noteoff (char note) {
 }
 
 void midi_send_sequencer_step (int ti) {
-    triggerpreset *T = &CTX.preset.triggers[trig];
+    triggerpreset *T = &CTX.preset.triggers[ti];
 
     if (T->move == MOVE_SINGLE) {
-        if self.trig[ti].looppos > T->lastnote) {
+        if (self.trig[ti].looppos > T->lastnote) {
             if (self.trig[ti].looppos == (T->lastnote+1)) {
-                midi_send_noteoff (T->notes[lastnote]);
+                midi_send_noteoff (T->notes[T->lastnote]);
             }
             self.trig[ti].looppos++;
             return;
@@ -150,7 +150,7 @@ void midi_send_sequencer_step (int ti) {
     
     switch (T->vconf) {
         case VELO_COPY:
-            velocity = T->velocity;
+            velocity = self.trig[ti].velocity;
             break;
             
         case VELO_INDIVIDUAL:
@@ -268,7 +268,7 @@ void midi_receive_thread (thread *t) {
                         for (int n=0; n<12; ++n) {
                             if (trigmatch[n] == note) {
                                 if (noteon) midi_noteon_response (n, vel);
-                                else midi_noteoff_reponse (n);
+                                else midi_noteoff_response (n);
                             }
                         }
                     }
@@ -294,8 +294,8 @@ void midi_send_thread (thread *t) {
         if (c>=0) {
             triggerpreset *T = CTX.preset.triggers + c;
             uint64_t dif = now - self.trig[c].ts;
-            if ((T->send == SEND_NOTE) && (T->nmode != NMODE_GATE) &&
-                (T->nmode != NMODE_LEGATO) {
+            if ((T->send == SEND_NOTES) && (T->nmode != NMODE_GATE) &&
+                (T->nmode != NMODE_LEGATO)) {
                 if (self.trig[c].gate) {
                     uint64_t notelen = qnote;
                     switch (T->nmode) {
