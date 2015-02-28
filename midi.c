@@ -342,7 +342,7 @@ void midi_send_thread (thread *t) {
                 
                 uint64_t next_offs = notelen * (self.trig[c].looppos);
 
-                gatelen = (notelen * self.trig[c].gateperc) / 100ULL;
+                gatelen = (notelen * (100-self.trig[c].gateperc)) / 100ULL;
                 if (self.noteon[note]) {
                     if (dif >= (next_offs - gatelen)) {
                         for (int i=0; i<127; ++i) {
