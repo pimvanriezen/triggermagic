@@ -313,8 +313,11 @@ void midi_noteon_response (int trig, char velo) {
 /** Thread that polls the incoming MIDI port, dispatching Note On and
   * Off messages further into the system */
 void midi_receive_thread (thread *t) {
+    /* TR-8
     char trigmatch[12] = {0x24,0x26,0x2b,0x2f,0x32,0x25,0x27,0x2a,
-                          0x2e,0x31,0x33,0x34};
+                          0x2e,0x31,0x33,0x34}; */
+    
+    char trigmatch[12] = {48,49,50,52,53,54,55,57,59,51,56,58};
                           
     PmEvent buffer[128];
     int count;
