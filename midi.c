@@ -369,7 +369,7 @@ void midi_set_input_device (int devid) {
         self.in = NULL;
     }
     
-    Pm_OpenInput (&self.in, devid, NULL, 16, NULL, NULL);
+    Pm_OpenInput (&self.in, devid, NULL, 128, NULL, NULL);
     Pm_SetFilter(self.in, PM_FILT_ACTIVE | PM_FILT_SYSEX | PM_FILT_CLOCK);
     pthread_mutex_unlock (&self.in_lock);
 }
@@ -381,7 +381,7 @@ void midi_set_output_device (int devid) {
         self.out = NULL;
     }
     
-    Pm_OpenOutput (&self.out, devid, NULL, 16, NULL, NULL, 0);
+    Pm_OpenOutput (&self.out, devid, NULL, 128, NULL, NULL, 0);
     pthread_mutex_unlock (&self.out_lock);
 }
 
