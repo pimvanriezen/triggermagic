@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ui.h"
 #include "lcd.h"
@@ -883,8 +884,17 @@ void *ui_waitmidi (void) {
 /** Show splash screen, then jump to performance menu */
 void *ui_splash (void) {
     lcd_home();
+    string tmagic = "  triggermagic  ";
     lcd_printf ("   \003\004 midilab    \n"
                 "  triggermagic  ");
-    sleep (5);
+    
+    for (int i=0; i<13; ++i) {
+        musleep (5000000/13);
+        tmagic[i] = toupper (tmagic[i]);
+        lcd_setpos (0,1);
+        lcd_printf (tmagic);
+        tmagic[i] = tolower (tmagic[i]);
+    }
+    sleep (1);
     return ui_waitmidi;
 }
