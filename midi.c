@@ -324,6 +324,8 @@ void midi_send_thread (thread *t) {
                 uint64_t gatelen;
                 char note = T->notes[self.trig[c].seqpos];
                 
+                printf ("slen %i\n", T->slen);
+                
                 switch (T->slen) {
                     case 2: notelen *= 2; break;
                     case 8: notelen /= 2; break;
