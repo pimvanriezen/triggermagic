@@ -55,6 +55,7 @@ void midi_send_noteon (char note, char velocity) {
     char channel = CTX.send_channel;
     long msg = 0x90 | channel | ((long) note << 8) | (long) velocity << 16;
     Pm_WriteShort (self.out, 0, msg);
+    self.noteon[note] = true;
     button_manager_flash_midi_out();
 }
 
@@ -64,6 +65,7 @@ void midi_send_noteoff (char note) {
     char channel = CTX.send_channel;
     long msg = 0x91 | channel | ((long) note << 8);
     Pm_WriteShort (self.out, 0, msg);
+    self.noteon[note] = false;
 }
 
 void midi_send_sequencer_step (int ti) {
