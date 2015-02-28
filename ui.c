@@ -761,9 +761,11 @@ void *ui_edit_name (void) {
     }
 }
 
+static uint8_t main_menu_pos = 0;
+
 /** Edit main menu */
 void *ui_edit_main (void) {
-    uint8_t choice = 0;
+    uint8_t choice = main_menu_pos;
     const char *ch_name[3] = {"Edit name","Edit Triggers","System Setup"};
     uifunc ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
     while (1) {
@@ -779,12 +781,14 @@ void *ui_edit_main (void) {
             case BTMASK_RIGHT:
                 choice = choice+1;
                 if (choice>2) choice = 0;
+                main_menu_pos = choice;
                 break;
             
             case BTMASK_STK_LEFT:
             case BTMASK_LEFT:
                 if (choice) choice = choice-1;
                 else choice = 2;
+                main_menu_pos = choice;
                 break;
             
             case BTMASK_STK_CLICK:
