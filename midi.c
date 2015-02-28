@@ -330,15 +330,16 @@ void midi_send_thread (thread *t) {
                     case 16: notelen /=4; break;
                 }
                 
+                uint64_t next_offs = notelen * (self.trig[c].looppos+1);
+
                 gatelen = (notelen * self.trig[c].gateperc) / 100ULL;
                 if (self.noteon[note]) {
-                    if (dif - (notelen * self.trig[c].looppos) >= gatelen) {
+                    if (dif >= (next_offs - gatelen)) {
                         midi_send_noteoff (note);
                     }
                 }
                 
-                if (dif - (notelen * self.trig[c].looppos) >= notelen) {
-                    printf ("dif %llu notelen %llu\n", dif - (notelen * self.trig[c].looppos) , notelen);
+                if (dif >= next_offs) {
                     midi_send_sequencer_step (c);
                 }
             }
