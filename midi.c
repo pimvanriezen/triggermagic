@@ -117,7 +117,7 @@ void midi_send_sequencer_step (int ti) {
                 break;
         
             case MOVE_LOOP_UPDOWN:
-                if ((self.trig[ti].looppos/(T->lastnote?T->lastnote:1))&1) {
+                if (((self.trig[ti].looppos-1)/(T->lastnote?T->lastnote:1))&1) {
                     self.trig[ti].seqpos--;
                 }
                 else self.trig[ti].seqpos++;
