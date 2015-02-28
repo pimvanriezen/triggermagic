@@ -50,6 +50,7 @@ bool midi_available (void) {
 }
 
 void midi_send_noteon (char note, char velocity) {
+    if (! note) return;
     printf ("noteon %i (%i)\n", note, velocity);
     char channel = CTX.send_channel;
     long msg = 0x90 | channel | ((long) note << 8) | (long) velocity << 16;
@@ -58,8 +59,10 @@ void midi_send_noteon (char note, char velocity) {
 }
 
 void midi_send_noteoff (char note) {
+    if (! note) return;
+    printf ("noteoff %i\n", note);
     char channel = CTX.send_channel;
-    long msg = 0x90 | channel | ((long) note << 8);
+    long msg = 0x91 | channel | ((long) note << 8);
     Pm_WriteShort (self.out, 0, msg);
 }
 
