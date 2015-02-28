@@ -730,7 +730,11 @@ void *ui_edit_name (void) {
             
             case BTMASK_STK_LEFT:
             case BTMASK_MINUS:
-                if (CTX.preset.name[crsr] != ' ') {
+                if (crsr && CTX.preset.name[crsr] == ' ' &&
+                    CTX.preset.name[crsr-1] != ' ') {
+                    CTX.preset.name[crsr] = CTX.preset.name[crsr-1];
+                }
+                else if (CTX.preset.name[crsr] != ' ') {
                     const char *pos = strchr (CSET, CTX.preset.name[crsr]);
                     if (! pos) {
                         CTX.preset.name[crsr] = ' ';
@@ -742,6 +746,10 @@ void *ui_edit_name (void) {
             
             case BTMASK_STK_RIGHT:
             case BTMASK_PLUS:
+                if (crsr && CTX.preset.name[crsr] == ' ' &&
+                    CTX.preset.name[crsr-1] != ' ') {
+                    CTX.preset.name[crsr] = CTX.preset.name[crsr-1];
+                }
                 if (CTX.preset.name[crsr] != '@') {
                     const char *pos = strchr (CSET, CTX.preset.name[crsr]);
                     if (! pos) {
