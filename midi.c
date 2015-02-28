@@ -60,6 +60,7 @@ void midi_send_noteon (char note, char velocity) {
         Pm_WriteShort (self.out, 0, msg);
     }
     pthread_mutex_unlock (&self.out_lock);
+    printf ("NoteOn %i %i\n", note, velocity);
     button_manager_flash_midi_out();
 }
 
@@ -71,6 +72,7 @@ void midi_send_noteoff (char note) {
     Pm_WriteShort (self.out, 0, msg);
     self.noteon[note] = false;
     pthread_mutex_unlock (&self.out_lock);
+    printf ("NoteOff %i\n", note);
 }
 
 void midi_send_sequencer_step (int ti) {
@@ -221,8 +223,8 @@ void midi_noteon_response (int trig, char velo) {
     pthread_mutex_lock (&self.seq_lock);
 
     self.current = trig;
-    self.trig[trig].gate = true;
     self.trig[trig].ts = getclock();
+    self.trig[trig].gate = true;
     self.trig[trig].velocity = velo;
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
     
