@@ -247,7 +247,7 @@ void midi_noteon_response (int trig, char velo) {
                     break;
             }
             
-            if (self.current == trug) {
+            if (self.current == trig) {
                 midi_send_noteon (T->notes[i], velocity);
             }
         }
