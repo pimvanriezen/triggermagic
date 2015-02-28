@@ -336,7 +336,7 @@ void midi_send_thread (thread *t) {
                 if (self.noteon[note]) {
                     if (dif >= (next_offs - gatelen)) {
                         for (int i=0; i<127; ++i) {
-                            if (noteon[i]) midi_send_noteoff (i);
+                            if (self.noteon[i]) midi_send_noteoff (i);
                         }
                     }
                 }
