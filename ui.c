@@ -830,6 +830,7 @@ void *ui_performance (void) {
         case BTMASK_STK_RIGHT:
         case BTMASK_RIGHT:
             if (CTX.preset_nr < 99) {
+                midi_panic();
                 context_load_preset (CTX.preset_nr + 1);
             }
             break;
@@ -837,6 +838,7 @@ void *ui_performance (void) {
         case BTMASK_STK_LEFT:
         case BTMASK_LEFT:
             if (CTX.preset_nr > 1) {
+                midi_panic();
                 context_load_preset (CTX.preset_nr - 1);
             }
             break;
@@ -857,6 +859,10 @@ void *ui_performance (void) {
         case BTMASK_SHIFT | BTMASK_MINUS:
             button_event_free (e);
             return ui_edit_main;
+            break;
+            
+        case BTMASK_SHIFT | BTMASK_PLUS:
+            midi_panic();
             break;
     }
     

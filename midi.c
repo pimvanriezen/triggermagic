@@ -89,6 +89,13 @@ void midi_send_noteoff (char note) {
 #endif
 }
 
+/** Send a MIDI panic out */
+void midi_panic (void) {
+    for (char i=1; i<128; ++i) {
+        midi_send_noteoff (i);
+    }
+}
+
 /** Perform a sequencer step, then advance it to the next note.
   * \param ti The selected trigger
   */

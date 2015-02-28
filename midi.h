@@ -7,7 +7,7 @@
 #include "thread.h"
 
 bool midi_available (void);
-void midi_read_thread (thread *);
+void midi_panic (void);
 void midi_init (void);
 void midi_check_ports (void);
 
