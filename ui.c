@@ -630,7 +630,9 @@ void *ui_edit_tr_notecount (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
-    return ui_generic_choice_menu ((int)tpreset->lastnote,
+    int old_lastnote = tpreset->lastnote;
+    void *res;
+    res = ui_generic_choice_menu ((int)tpreset->lastnote,
                                    "# Notes:",
                                    8,
                                    (int*)&tpreset->lastnote,
@@ -640,6 +642,20 @@ void *ui_edit_tr_notecount (void) {
                                    NULL,
                                    ui_edit_tr_notes,
                                    ui_edit_trig);
+
+    /* If the sequence length increased, copy note values from the
+     * formerly last note of the sequence. */
+    if (tpreset->lastnote > old_lastnote) {
+        int x = old_lastnote+1;
+        while (x <= tpreset->lastnote) {
+            if (! tpreset->notes[x]) {
+                tpreset->notes[x] = tpreset->notes[old_lastnote];
+            }
+            ++x;
+        }
+    } 
+    
+    return res;
 }
 
 /** Trigger selection menu. */
