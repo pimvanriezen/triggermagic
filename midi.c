@@ -338,7 +338,7 @@ void midi_send_thread (thread *t) {
                 }
                 
                 if (dif - (notelen * self.trig[c].looppos) >= notelen) {
-                    printf ("dif %llu notelen %llu\n", dif, notelen);
+                    printf ("dif %llu notelen %llu\n", dif - (notelen * self.trig[c].looppos) , notelen);
                     midi_send_sequencer_step (c);
                 }
             }
