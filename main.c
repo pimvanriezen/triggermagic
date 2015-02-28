@@ -28,7 +28,7 @@ void context_init (void) {
         for (int i=0; i<12; ++i) {
             triggerpreset *tp = &CTX.presets[cpre].triggers[i];
             tp->slen = 8;
-            tp->movetype = MOVE_UP;
+            tp->move = MOVE_LOOP_UP;
             tp->notes[0] = 48+i;
         }
     }
