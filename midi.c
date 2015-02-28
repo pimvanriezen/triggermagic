@@ -344,7 +344,6 @@ void midi_send_thread (thread *t) {
                 }
             }
         }
-        musleep (500);
     }
 }
 
