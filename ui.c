@@ -884,7 +884,7 @@ void *ui_waitmidi (void) {
 /** Show splash screen, then jump to performance menu */
 void *ui_splash (void) {
     lcd_home();
-    string tmagic = "  triggermagic  ";
+    char tmagic[] = "  triggermagic  ";
     lcd_printf ("   \003\004 midilab    \n"
                 "  triggermagic  ");
     
