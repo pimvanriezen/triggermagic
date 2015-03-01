@@ -450,6 +450,7 @@ void midi_receive_thread (thread *t) {
 void midi_send_thread (thread *t) {
     while (1) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
+        if (CTX.ext_sync) qnote = self.qnote;
         uint64_t now = getclock();
         int c = self.current;
         if (c>=0) {
