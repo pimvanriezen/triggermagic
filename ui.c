@@ -805,7 +805,7 @@ void *ui_edit_trig (void) {
         case BTMASK_PLUS:
         case BTMASK_MINUS:
             button_event_free (e);
-            return ui_edit_tr_notecount;
+            return last_edit_page;
             
         case BTMASK_SHIFT:
             button_event_free (e);
