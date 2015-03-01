@@ -218,7 +218,7 @@ void* ui_edit_global (void) {
     while (1) {
         lcd_home();
         lcd_printf ("System Setup       \n%-16s",   
-                    "FW version 1.0.0");
+                    "Firmware v1.0.1");
                     
         button_event *e = button_manager_wait_event (0);
         switch (e->buttons) {
@@ -826,7 +826,7 @@ static uint8_t main_menu_pos = 0;
 /** Edit main menu */
 void *ui_edit_main (void) {
     uint8_t choice = main_menu_pos;
-    const char *ch_name[3] = {"Edit name","Edit Triggers","System Setup"};
+    const char *ch_name[3] = {"Edit Name","Edit Triggers","System Setup"};
     uifunc ch_jump[3] = {ui_edit_name, ui_edit_trig, ui_edit_global};
     while (1) {
         lcd_home();
