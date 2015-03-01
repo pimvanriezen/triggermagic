@@ -381,8 +381,8 @@ void midi_receive_thread (thread *t) {
     char trigmatch[12] = {48,49,50,52,53,54,55,57,59,51,56,58};
                           
     PmEvent buffer[128];
-    clock_t last_sync = 0;
-    clock_t current_sync = 0;
+    uint64_t last_sync = 0;
+    uint64_t current_sync = 0;
     uint64_t sync_count = 0;
     
     int count;
