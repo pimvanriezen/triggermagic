@@ -115,5 +115,8 @@ int daemon_main (int argc, const char *argv[]) {
 }
 
 int main (int argc, const char *argv[]) {
+    if (argc>1 && (! strcmp (argv[1], "--foreground"))) {
+        return daemon_main (argc, argv);
+    }
     daemonize ("/var/run/triggermagic.pid", argc, argv, daemon_main, 0);
 }

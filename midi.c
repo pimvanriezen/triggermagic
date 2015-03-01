@@ -408,6 +408,7 @@ void midi_receive_thread (thread *t) {
                                 if (noteon) midi_noteon_response (n, vel);
                                 else midi_noteoff_response (n);
                             }
+                            button_manager_flash_midi_in();
                         }
                         else if (msg == 0xf8) {
                             if (! (sync_count % 24)) {
@@ -417,12 +418,12 @@ void midi_receive_thread (thread *t) {
                                     self.qnote = last_sync-current_sync;
                                     if (self.qnote == 0) self.qnote = 1;
                                     CTX.ext_tempo = 60000/self.qnote;
+                                    printf ("qnote=%i\n",self.qnote);
                                 }
                             }
                             sync_count++;
                         }
                     }
-                    button_manager_flash_midi_in();
                 }
             }
             else musleep (50000);
