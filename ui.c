@@ -258,6 +258,42 @@ void ui_write_note (char notenr) {
     }
 }
 
+void *ui_edit_prevfrom_tr_copy (void) {
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    if (tpreset->send == SEND_SEQUENCE) return ui_edit_tr_seq_move;
+    else return ui_edit_tr_notes_mode;
+}
+
+void *ui_edit_tr_copy (void) {
+    int copyfrom = -1;
+    void *rval = NULL;
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
+    lcd_home();
+    lcd_printf ("Trigger %i       \n", CTX.trigger_nr+1);
+    rval = ui_generic_choice_menu (copyfrom,
+                                   "Copy From:",
+                                   13,
+                                   &copyfrom,
+                                   (const char *[]){
+                                        "","1","2","3","4","5","6","7","8",
+                                        "9","10","11","12"
+                                   },
+                                   (int []){
+                                        -1,0,1,2,3,4,5,6,7,8,9,10,11,12
+                                   },
+                                   ui_edit_prevfrom_tr_copy,
+                                   NULL,
+                                   ui_edit_trig);
+    if (copyfrom >= 0) {
+        memcpy (tpreset, CTX.preset.triggers + copyfrom,
+                sizeof (triggerpreset));
+        lcd_move (0,1);
+        lcd_printf ("Trigger copied..");
+        sleep (1);
+    }
+    return val;
+}
+
 /** Menu for the sequence move parameter */
 void *ui_edit_tr_seq_move (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
@@ -288,7 +324,7 @@ void *ui_edit_tr_seq_move (void) {
                                         MOVE_LOOP_RANDOM
                                    },
                                    ui_edit_tr_seq_range,
-                                   ui_edit_tr_seq_move,
+                                   ui_edit_tr_copy,
                                    ui_edit_trig);
 }
 
@@ -408,7 +444,7 @@ void *ui_edit_tr_notes_mode (void) {
                                         NMODE_LEGATO
                                    },
                                    ui_edit_tr_sendconfig,
-                                   ui_edit_tr_notes_mode,
+                                   ui_edit_tr_copy,
                                    ui_edit_trig);
 }
 
