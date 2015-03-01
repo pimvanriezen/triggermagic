@@ -956,7 +956,7 @@ void *ui_performance (void) {
                 CTX.preset.name,
                 light_midi_in ? '\005' : ' ',
                 light_midi_out ? '\006' : ' ',
-                CTX.preset.tempo,
+                tempo,
                 (CTX.transpose<-9||CTX.transpose>9)?"":" ",
                 CTX.transpose<0?'-':'+',
                 CTX.transpose<0?-CTX.transpose:CTX.transpose);
