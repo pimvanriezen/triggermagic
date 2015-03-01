@@ -384,7 +384,6 @@ void midi_receive_thread (thread *t) {
     uint64_t last_sync = 0;
     uint64_t current_sync = 0;
     uint64_t sync_count = 0;
-    uint64_t sync_total = 0;
     
     int count;
     while (1) {
@@ -412,20 +411,18 @@ void midi_receive_thread (thread *t) {
                             button_manager_flash_midi_in();
                         }
                         else if (msg == 0xf8) {
-                            last_sync = current_sync;
-                            current_sync = getclock();
-                            sync_count++;
-                            if (last_sync) {
-                                sync_total += (current_sync-last_sync);
-                                if (sync_count % 48 ==0) {
-                                    self.qnote = sync_total/2;
+                            if (! (sync_count % 96)) {
+                                last_sync = current_sync;
+                                current_sync = getclock();
+                                if (last_sync) {
+                                    self.qnote = current_sync-last_sync/4;
                                     if (self.qnote == 0) self.qnote = 1;
                                     CTX.ext_tempo = (60000/self.qnote);
                                     printf ("qnote=%llx\n", self.qnote);
                                     printf ("ext=%i\n", CTX.ext_tempo);
-                                    sync_total = 0;
                                 }
                             }
+                            sync_count++;
                         }
                     }
                 }
@@ -433,7 +430,7 @@ void midi_receive_thread (thread *t) {
             }
             else {
                 pthread_mutex_unlock (&self.in_lock);
-                musleep (50000);
+                musleep (5000);
             }
         }
         else {
