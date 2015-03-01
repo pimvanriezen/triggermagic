@@ -282,7 +282,7 @@ void midi_noteon_response (int trig, char velo) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
         uint64_t tsdif = self.trig[trig].ts - last_ts;
         tsdif = (tsdif + (qnote/2)) / qnote;
-        tdifs *= qnote;
+        tsdif *= qnote;
         self.trig[trig].ts = last_ts + tsdif;
     }
     
