@@ -38,6 +38,7 @@ static struct midistate {
     triggerstate     trig[12]; /**< State for all triggers */
     bool             noteon[128]; /**< Note-on states of MIDI output */
     uint64_t         qnote; /**< Inferred quarter note value from extsync */
+    uint64_t         lastsync; /**< Last extsync point */
 } self;
 
 /** Return the current time in milliseconds since epoch */
@@ -281,6 +282,8 @@ void midi_noteon_response (int trig, char velo) {
     /** Quantize a jump from one sequence into another */
     if (last_ts && T->send == SEND_SEQUENCE) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
+        if (CTX.ext_sync) qnote = self.qnote;
+        
         uint64_t tsdif = self.trig[trig].ts - last_ts;
         tsdif = (tsdif + (qnote/2)) / qnote;
         tsdif *= qnote;
@@ -415,11 +418,14 @@ void midi_receive_thread (thread *t) {
                                 last_sync = current_sync;
                                 current_sync = getclock();
                                 if (last_sync) {
-                                    self.qnote = (current_sync-last_sync)/4;
-                                    if (self.qnote == 0) self.qnote = 1;
-                                    CTX.ext_tempo = (60000/self.qnote);
-                                    printf ("qnote=%llx\n", self.qnote);
-                                    printf ("ext=%i\n", CTX.ext_tempo);
+                                    uint64_t qn = (current_sync-last_sync)/4;
+                                    if (qn > 50) {
+                                        self.qnote = qn;
+                                        self.last_sync = current_sync;
+                                        CTX.ext_tempo = (60000/qn);
+                                        printf ("qnote=%llx\n", qn);
+                                        printf ("ext=%i\n", CTX.ext_tempo);
+                                    }
                                 }
                             }
                             sync_count++;
@@ -487,6 +493,24 @@ void midi_send_thread (thread *t) {
                     case 16: notelen /=4; break;
                 }
                 
+                if (CTX.ext_sync && self.last_sync > self.trig[c].ts) {
+                    uint64_t x = self.trig[c].ts;
+                    while (x < self.last_sync) x+= notelen;
+                    uint64_t desync = x-self.last_sync;
+                    if (desync) {
+                        
+                        /* we're early? */
+                        if (desync > (notelen/2)) {
+                            dif++;
+                            self.trig[c].ts--;
+                        }
+                        else { /* late */
+                            dif--;
+                            self.trig[c].ts++;
+                        }
+                    }
+                }
+
                 uint64_t next_offs = notelen * (self.trig[c].looppos);
 
                 gatelen = (notelen * (100-self.trig[c].gateperc)) / 100ULL;
