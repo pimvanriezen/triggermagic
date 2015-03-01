@@ -272,6 +272,7 @@ static int ui_edit_tr_copyfrom = -1;
 
 void *ui_handle_tr_copy (void) {
     int copyfrom = ui_edit_tr_copyfrom;
+    triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     if (copyfrom >= 0) {
         memcpy (tpreset, CTX.preset.triggers + copyfrom,
                 sizeof (triggerpreset));
