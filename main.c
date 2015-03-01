@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "ui.h"
 #include "presets.h"
+#include "daemon.h"
 
 context_global CTX;
 

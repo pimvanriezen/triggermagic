@@ -98,7 +98,7 @@ int daemonize (const char *pidfilepath, int argc,
         pidbuf[127] = 0;
         pwatchdog = atoi (pidbuf);
         if (pwatchdog && (kill (pwatchdog, 0) == 0)) {
-            log_error ("Already running");
+            fprintf (stderr, "Already running\n");
             return 0;
         }
     }
@@ -106,7 +106,7 @@ int daemonize (const char *pidfilepath, int argc,
     /* Create an outer fork that allows us to detach from the group */
     switch (pwrapper = fork()) {
         case -1:
-            log_error ("Fork failed");
+            fprintf (stderr, "Fork failed\n");
             break;
         
         case 0:
