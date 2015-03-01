@@ -418,7 +418,7 @@ void midi_receive_thread (thread *t) {
                                     self.qnote = current_sync-last_sync;
                                     if (self.qnote == 0) self.qnote = 1;
                                     CTX.ext_tempo = (60000/self.qnote);
-                                    printf ("qnote=%i\n", self.qnote);
+                                    printf ("qnote=%llx\n", self.qnote);
                                     printf ("ext=%i\n", CTX.ext_tempo);
                                 }
                             }
@@ -426,8 +426,12 @@ void midi_receive_thread (thread *t) {
                         }
                     }
                 }
+                pthread_mutex_unlock (&self.in_lock);
             }
-            pthread_mutex_unlock (&self.in_lock);
+            else {
+                pthread_mutex_unlock (&self.in_lock);
+                musleep (5000);
+            }
         }
         else {
             pthread_mutex_unlock (&self.in_lock);
