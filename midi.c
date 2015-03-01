@@ -38,7 +38,7 @@ static struct midistate {
     triggerstate     trig[12]; /**< State for all triggers */
     bool             noteon[128]; /**< Note-on states of MIDI output */
     uint64_t         qnote; /**< Inferred quarter note value from extsync */
-    uint64_t         lastsync; /**< Last extsync point */
+    uint64_t         last_sync; /**< Last extsync point */
 } self;
 
 /** Return the current time in milliseconds since epoch */
