@@ -69,7 +69,7 @@ void context_init (void) {
     }
 }
 
-void contex_write_global (void) {
+void context_write_global (void) {
     FILE *f = fopen ("/boot/tmglobal.new","w");
     if (! f) return;
     fprintf (f, "inport:%s\n", CTX.portname_midi_in);
