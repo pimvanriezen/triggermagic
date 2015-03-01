@@ -105,10 +105,14 @@ void context_store_preset (void) {
                             "/boot/tmpreset.dat");
 }
 
-int main (int argc, const char *argv[]) {
+int daemon_main (int argc, const char *argv[]) {
     context_init();
     lcd_init();
     button_manager_init();
     ui_main();
     return 0;
+}
+
+int main (int argc, const char *argv[]) {
+    daemonize ("/var/run/triggermagic.pid", argc, argv, daemon_main, 0);
 }
