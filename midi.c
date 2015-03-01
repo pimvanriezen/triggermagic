@@ -427,7 +427,6 @@ void midi_receive_thread (thread *t) {
                     }
                 }
             }
-            else musleep (50000);
             pthread_mutex_unlock (&self.in_lock);
         }
         else {
