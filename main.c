@@ -65,6 +65,9 @@ void context_init (void) {
             else if (strncmp (buf, "sendchannel:", 12) == 0) {
                 CTX.send_channel = atoi (buf+12) - 1;
             }
+            else if (strncmp (buf, "extsync:",8) == 0) {
+                CTX.ext_sync = atoi (buf+8);
+            }
         }
         fclose (pst);
     }
@@ -77,6 +80,7 @@ void context_write_global (void) {
     fprintf (f, "outport:%s\n", CTX.portname_midi_out);
     fprintf (f, "triggertype:%i\n", (int) CTX.trigger_type);
     fprintf (f, "sendchannel:%i\n", CTX.send_channel);
+    fprintf (f, "extsync:%i\n", CTX.ext_sync);
     fclose (f);
     rename ("/boot/tmglobal.new","/boot/tmglobal.dat");
 }
