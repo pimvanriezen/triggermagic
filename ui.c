@@ -760,9 +760,9 @@ void *ui_edit_trig (void) {
 void *ui_edit_name (void) {
     uint8_t crsr = 0;
     while (1) {
-        lcd_home();
-        lcd_printf ("%-13s   \n                ", CTX.preset.name);
-        lcd_setpos (crsr,0);
+        lcd_setpos (3,0);
+        lcd_printf ("%-13s", CTX.preset.name);
+        lcd_setpos (crsr+3,0);
         lcd_showcursor ();
         
         if (! CTX.preset.name[crsr]) {
