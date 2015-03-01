@@ -16,6 +16,7 @@ void    *ui_generic_choice_menu (int cv, const char *pr, int cnt,
                                  int *writeto, const char *n[], int v[],
                                  void *lr, void *rr, void *ur, uifunc);
 void     ui_write_note (char);
+void    *ui_edit_global_sync (void);
 void    *ui_edit_global_channel (void);
 void    *ui_edit_global_triggertype (void);
 void    *ui_edit_global (void);

@@ -100,6 +100,8 @@ typedef struct context_global_s {
     char             portname_midi_out[256];
     triggertype      trigger_type;
     int              send_channel;
+    int              ext_tempo;
+    int              ext_sync; /**< 1 if we should sync to midi */
 } context_global;
 
 /* ============================== GLOBALS ============================== */

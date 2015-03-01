@@ -169,9 +169,24 @@ void *ui_save_global (void) {
     return ui_edit_main;
 }
 
+void *ui_edit_global_sync (void) {
+    lcd_home();
+    lcd_printf ("System Setup       \n");
+    return ui_generic_choice_menu ((int) CTX.ext_sync,
+                                   "Ext Sync:",
+                                   2,
+                                   (int*) &CTX.ext_sync,
+                                   (const char *[]){"Off","On"},
+                                   (int []){0,1},
+                                   ui_edit_global_channel,
+                                   NULL,
+                                   ui_save_global,
+                                   NULL);
+}
+
 void *ui_edit_global_channel (void) {
-        lcd_home();
-        lcd_printf ("System Setup       \n");
+    lcd_home();
+    lcd_printf ("System Setup       \n");
     return ui_generic_choice_menu ((int) CTX.send_channel,
                                    "Out Channel:",
                                    16,
@@ -184,7 +199,7 @@ void *ui_edit_global_channel (void) {
                                      0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
                                    },
                                    ui_edit_global_triggertype,
-                                   NULL,
+                                   ui_edit_global_sync,
                                    ui_save_global,
                                    NULL);
 }
@@ -935,6 +950,7 @@ static bool light_midi_out = false;
 /** Main performance menu */
 void *ui_performance (void) {
     lcd_home();
+    int tempo = CTX.ext_sync ? CTX.ext_tempo : CTX.preset.tempo;
     lcd_printf ("%02i|%-13s\n%c%c|\001 %3i     %s%c%i",   
                 CTX.preset_nr,
                 CTX.preset.name,
@@ -981,13 +997,13 @@ void *ui_performance (void) {
             
         case BTMASK_PLUS:
             if (CTX.preset.tempo < 257) {
-                CTX.preset.tempo++;
+                if (! CTX.ext_sync) CTX.preset.tempo++;
             }
             break;
         
         case BTMASK_MINUS:
             if (CTX.preset.tempo > 41) {
-                CTX.preset.tempo--;
+                if (! CTX.ext_sync) CTX.preset.tempo--;
             }
             break;
         

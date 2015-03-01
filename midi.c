@@ -37,6 +37,7 @@ static struct midistate {
     int              current; /**< Currently active trigger */
     triggerstate     trig[12]; /**< State for all triggers */
     bool             noteon[128]; /**< Note-on states of MIDI output */
+    uint64_t         qnote; /**< Inferred quarter note value from extsync */
 } self;
 
 /** Return the current time in milliseconds since epoch */
@@ -380,6 +381,9 @@ void midi_receive_thread (thread *t) {
     char trigmatch[12] = {48,49,50,52,53,54,55,57,59,51,56,58};
                           
     PmEvent buffer[128];
+    clock_t last_sync = 0;
+    clock_t current_sync = 0;
+    
     int count;
     while (1) {
         pthread_mutex_lock (&self.in_lock);
@@ -389,21 +393,28 @@ void midi_receive_thread (thread *t) {
                 if (count) {
                     for (int i=0; i<count; ++i) {
                         long msg = buffer[i].message;
-                        bool noteon;
-                        char note = ((msg & 0x7f00) >> 8);
-                        char vel = ((msg & 0x7f0000) >> 16);
                         
                         if ((msg & 0xe0) == 0x80) {
-                            noteon = false;
+                            bool noteon = false;
+                            char note = ((msg & 0x7f00) >> 8);
+                            char vel = ((msg & 0x7f0000) >> 16);
                             if ((msg & 0xf0) == 0x90 && vel) {
                                 noteon = true;
                             }
-                        }
                         
-                        int n = midi_match_trigger (note);
-                        if (n>=0) {
-                            if (noteon) midi_noteon_response (n, vel);
-                            else midi_noteoff_response (n);
+                            int n = midi_match_trigger (note);
+                            if (n>=0) {
+                                if (noteon) midi_noteon_response (n, vel);
+                                else midi_noteoff_response (n);
+                            }
+                        }
+                        else if (msg == 0xf8) {
+                            last_sync = current_sync;
+                            current_sync = getclock();
+                            if (last_sync) {
+                                self.qnote = 24 * (last_sync-current_sync);
+                                CTX.ext_tempo = 60000/self.qnote;
+                            }
                         }
                     }
                     button_manager_flash_midi_in();
@@ -512,7 +523,7 @@ void midi_set_input_device (int devid) {
     }
     
     Pm_OpenInput (&self.in, devid, NULL, 128, NULL, NULL);
-    Pm_SetFilter(self.in, PM_FILT_ACTIVE | PM_FILT_SYSEX | PM_FILT_CLOCK);
+    Pm_SetFilter(self.in, PM_FILT_ACTIVE | PM_FILT_SYSEX);
     pthread_mutex_unlock (&self.in_lock);
 }
 
