@@ -260,6 +260,15 @@ void midi_noteon_response (int trig, char velo) {
         if (self.noteon[i]) midi_send_noteoff (i);
     }
     
+    uint64_t last_ts = 0;
+    if (self.current >= 0) {
+        if (CTX.preset.triggers[self.current].send == SEND_SEQUENCE) {
+            last_ts = self.trig[self.current].ts;
+        }
+    }
+
+    triggerpreset *T = &CTX.preset.triggers[trig];
+    
     pthread_mutex_lock (&self.seq_lock);
 
     self.current = trig;
@@ -268,9 +277,17 @@ void midi_noteon_response (int trig, char velo) {
     self.trig[trig].velocity = velo;
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
     
+    /** Quantize a jump from one sequence into another */
+    if (last_ts && T->send == SEND_SEQUENCE) {
+        uint64_t qnote = 60000 / CTX.preset.tempo;
+        uint64_t tsdif = self.trig[trig].ts - last_ts;
+        tsdif = (tsdif + (qnote/2)) / qnote;
+        tdifs *= qnote;
+        self.trig[trig].ts = last_ts + tsdif;
+    }
+    
     pthread_mutex_unlock (&self.seq_lock);
 
-    triggerpreset *T = &CTX.preset.triggers[trig];
     int ntcount = T->lastnote+1;
     if (T->send != SEND_SEQUENCE) {
         for (i=0; i<ntcount; ++i) {
