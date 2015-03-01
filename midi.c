@@ -383,6 +383,7 @@ void midi_receive_thread (thread *t) {
     PmEvent buffer[128];
     clock_t last_sync = 0;
     clock_t current_sync = 0;
+    uint64_t sync_count = 0;
     
     int count;
     while (1) {
@@ -409,12 +410,16 @@ void midi_receive_thread (thread *t) {
                             }
                         }
                         else if (msg == 0xf8) {
-                            last_sync = current_sync;
-                            current_sync = getclock();
-                            if (last_sync) {
-                                self.qnote = 24 * (last_sync-current_sync);
-                                CTX.ext_tempo = 60000/self.qnote;
+                            if (! (sync_count % 24)) {
+                                last_sync = current_sync;
+                                current_sync = getclock();
+                                if (last_sync) {
+                                    self.qnote = last_sync-current_sync;
+                                    if (self.qnote == 0) self.qnote = 1;
+                                    CTX.ext_tempo = 60000/self.qnote;
+                                }
                             }
+                            sync_count++;
                         }
                     }
                     button_manager_flash_midi_in();
