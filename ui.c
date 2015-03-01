@@ -726,9 +726,7 @@ void *ui_edit_tr_notecount (void) {
 /** Trigger selection menu. */
 void *ui_edit_trig (void) {
     lcd_home();
-    lcd_printf ("%02i|Edit Triggers\n  |Trigger %i    ",   
-                CTX.preset_nr,
-                CTX.trigger_nr+1);
+    lcd_printf ("Trigger %i       \n<> Nav  -+ Edit ", CTX.trigger_nr+1);
         
     button_event *e = button_manager_wait_event (0);
     switch (e->buttons) {
