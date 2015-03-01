@@ -106,7 +106,8 @@ void *ui_generic_choice_menu (int curval,
                               int values[],
                               void *leftresult,
                               void *rightresult,
-                              void *upresult) {
+                              void *upresult,
+                              uifunc cb) {
     lcd_setpos (0, 1);
     lcd_printf ("%s ", prompt);
     int x = strlen (prompt) +1;
@@ -131,6 +132,7 @@ void *ui_generic_choice_menu (int curval,
             case BTMASK_STK_CLICK:
                 button_manager_add_event (e->buttons, 0);
                 *writeto = ui_select (curval, x, 1, len, count, names, values);
+                if (cb) return cb();
                 break;
                 
             case BTMASK_LEFT:
@@ -181,7 +183,8 @@ void *ui_edit_global_channel (void) {
                                    },
                                    ui_edit_global_triggertype,
                                    NULL,
-                                   ui_save_global);
+                                   ui_save_global,
+                                   NULL);
 }
 
 
@@ -210,7 +213,8 @@ void *ui_edit_global_triggertype (void) {
                                    },
                                    ui_edit_global,
                                    ui_edit_global_channel,
-                                   ui_save_global);
+                                   ui_save_global,
+                                   NULL);
 }
 
 /** Placeholder */
@@ -264,16 +268,30 @@ void *ui_edit_prevfrom_tr_copy (void) {
     else return ui_edit_tr_notes_mode;
 }
 
+static int ui_edit_tr_copyfrom = -1;
+
+void *ui_handle_tr_copy (void) {
+    int copyfrom = ui_edit_tr_copyfrom;
+    if (copyfrom >= 0) {
+        memcpy (tpreset, CTX.preset.triggers + copyfrom,
+                sizeof (triggerpreset));
+        lcd_setpos (0,1);
+        lcd_printf ("Trigger copied..");
+        sleep (1);
+    }
+    return ui_edit_tr_copy;
+}
+
 void *ui_edit_tr_copy (void) {
-    int copyfrom = -1;
+    ui_edit_tr_copyfrom = -1;
     void *rval = NULL;
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i       \n", CTX.trigger_nr+1);
-    rval = ui_generic_choice_menu (copyfrom,
+    rval = ui_generic_choice_menu (ui_edit_tr_copyfrom,
                                    "Copy From:",
                                    13,
-                                   &copyfrom,
+                                   &ui_edit_tr_copyfrom,
                                    (const char *[]){
                                         "","1","2","3","4","5","6","7","8",
                                         "9","10","11","12"
@@ -283,15 +301,8 @@ void *ui_edit_tr_copy (void) {
                                    },
                                    ui_edit_prevfrom_tr_copy,
                                    NULL,
-                                   ui_edit_trig);
-    if (copyfrom >= 0) {
-        memcpy (tpreset, CTX.preset.triggers + copyfrom,
-                sizeof (triggerpreset));
-        lcd_setpos (0,1);
-        lcd_printf ("Trigger copied..");
-        sleep (1);
-    }
-    return rval;
+                                   ui_edit_trig,
+                                   ui_handle_tr_copy);
 }
 
 /** Menu for the sequence move parameter */
@@ -325,7 +336,8 @@ void *ui_edit_tr_seq_move (void) {
                                    },
                                    ui_edit_tr_seq_range,
                                    ui_edit_tr_copy,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Menu for the sequence range parameter */
@@ -351,7 +363,8 @@ void *ui_edit_tr_seq_range (void) {
                                    },
                                    ui_edit_tr_seq_gate,
                                    ui_edit_tr_seq_move,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Menu for the sequence gate parameter */
@@ -385,7 +398,8 @@ void *ui_edit_tr_seq_gate (void) {
                                    },
                                    ui_edit_tr_seq_length,
                                    ui_edit_tr_seq_range,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Menu for the sequence note length parameter */
@@ -413,7 +427,8 @@ void *ui_edit_tr_seq_length (void) {
                                    },
                                    ui_edit_tr_sendconfig,
                                    ui_edit_tr_seq_gate,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Menu for the note trigger mode parameter */
@@ -445,7 +460,8 @@ void *ui_edit_tr_notes_mode (void) {
                                    },
                                    ui_edit_tr_sendconfig,
                                    ui_edit_tr_copy,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Determine previous menu from trigger send config. Depends on whether
@@ -477,7 +493,8 @@ void *ui_edit_tr_sendconfig (void) {
                                    (int[]){SEND_NOTES,SEND_SEQUENCE},
                                    ui_edit_prevfrom_tr_sendconfig,
                                    ui_edit_nextfrom_tr_sendconfig,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** Editor for individual velocities */
@@ -608,7 +625,8 @@ void *ui_edit_tr_velocity_mode (void) {
                                     VELO_FIXED_64, VELO_FIXED_100},
                                    ui_edit_tr_notes,
                                    ui_edit_nextfrom_tr_velocity_mode,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 }
 
 /** The chord/sequence note editor. Edits as many notes as configured
@@ -742,7 +760,8 @@ void *ui_edit_tr_notecount (void) {
                                    (int[]){0,1,2,3,4,5,6,7},
                                    NULL,
                                    ui_edit_tr_notes,
-                                   ui_edit_trig);
+                                   ui_edit_trig,
+                                   NULL);
 
     /* If the sequence length increased, copy note values from the
      * formerly last note of the sequence. */
