@@ -417,8 +417,9 @@ void midi_receive_thread (thread *t) {
                                 if (last_sync) {
                                     self.qnote = current_sync-last_sync;
                                     if (self.qnote == 0) self.qnote = 1;
-                                    CTX.ext_tempo = 60000/self.qnote;
+                                    CTX.ext_tempo = (60000/self.qnote);
                                     printf ("qnote=%i\n", self.qnote);
+                                    printf ("ext=%i\n", CTX.ext_tempo);
                                 }
                             }
                             sync_count++;
