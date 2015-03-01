@@ -280,7 +280,7 @@ void *ui_handle_tr_copy (void) {
         lcd_printf ("Trigger copied..");
         sleep (1);
     }
-    return ui_edit_tr_copy;
+    return NULL;
 }
 
 void *ui_edit_tr_copy (void) {
