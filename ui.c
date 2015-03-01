@@ -264,7 +264,7 @@ void *ui_edit_tr_seq_move (void) {
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
     lcd_setpos (11,0);
-    lcd_printf ("[SEQ]\n");
+    lcd_printf ("[seq]\n");
     return ui_generic_choice_menu ((int) tpreset->move,
                                    "Move:",
                                    7,
@@ -298,7 +298,7 @@ void *ui_edit_tr_seq_range (void) {
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
     lcd_setpos (11,0);
-    lcd_printf ("[SEQ]\n");
+    lcd_printf ("[seq]\n");
     return ui_generic_choice_menu ((int) tpreset->range,
                                    "Range:",
                                    3,
@@ -324,7 +324,7 @@ void *ui_edit_tr_seq_gate (void) {
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
     lcd_setpos (11,0);
-    lcd_printf ("[SEQ]\n");
+    lcd_printf ("[seq]\n");
     return ui_generic_choice_menu ((int) tpreset->sgate,
                                    "Gate:",
                                    7,
@@ -358,7 +358,7 @@ void *ui_edit_tr_seq_length (void) {
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
     lcd_setpos (11,0);
-    lcd_printf ("[SEQ]\n");
+    lcd_printf ("[seq]\n");
     return ui_generic_choice_menu ((int)tpreset->slen,
                                    "Length:",
                                    4,
@@ -385,8 +385,8 @@ void *ui_edit_tr_notes_mode (void) {
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i    ", CTX.trigger_nr+1);
-    lcd_setpos (11,0);
-    lcd_printf ("[NTE]\n");
+    lcd_setpos (10,0);
+    lcd_printf ("[note]\n");
     return ui_generic_choice_menu ((int)tpreset->nmode,
                                    "Mode:",
                                    6,
@@ -698,7 +698,7 @@ void *ui_edit_tr_notecount (void) {
     int old_lastnote = tpreset->lastnote;
     void *res;
     res = ui_generic_choice_menu ((int)tpreset->lastnote,
-                                   "# Notes:",
+                                   "Notes:",
                                    8,
                                    (int*)&tpreset->lastnote,
                                    (const char *[])
