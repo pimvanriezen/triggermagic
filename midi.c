@@ -310,12 +310,55 @@ void midi_noteon_response (int trig, char velo) {
     }
 }
 
+char match_tr8[12]      = {0x24,0x26,0x2b,0x2f,0x32,0x25,0x27,0x2a,
+                           0x2e,0x31,0x33,0x34};
+char match_laser8[12]   = {0,2,4,5,6,7,9,11,1,3,8,10};
+char match_laser9[12]   = {0,1,2,4,5,6,7,9,11,3,8,10};
+char match_laser10[12]  = {0,1,2,4,5,6,7,8,9,11,3,10};
+char match_pedals7[12]  = {0,2,4,5,7,9,11,1,3,6,8,10};
+
+int midi_match_trigger (char note) {
+    char in_note = note;
+    if (CTX.trigger_type != TYPE_ROLAND_TR8) in_note = note % 12;
+    for (int i=0; i<12; ++i) {
+        char match_note;
+        switch (CTX.trigger_type) {
+            case TYPE_ROLAND_TR8:
+                match_note = match_tr8[i];
+                break;
+            
+            case TYPE_LASERHARP_8:
+                match_note = match_laser8[i];
+                break;
+            
+            case TYPE_LASERHARP_9:
+                match_note = match_laser9[i];
+                break;
+
+            case TYPE_LASERHARP_10:
+                match_note = match_laser10[i];
+                break;
+
+            case TYPE_CHROMATIC::
+                match_note = i;
+                break;
+
+            case TYPE_PEDALS_7:
+                match_note = match_pedals7[i];
+                break;
+        }
+        if (match_note == in_note) return i;
+    }
+    return -1;
+}
+
 /** Thread that polls the incoming MIDI port, dispatching Note On and
   * Off messages further into the system */
 void midi_receive_thread (thread *t) {
     /* TR-8
     char trigmatch[12] = {0x24,0x26,0x2b,0x2f,0x32,0x25,0x27,0x2a,
                           0x2e,0x31,0x33,0x34}; */
+    
     
     char trigmatch[12] = {48,49,50,52,53,54,55,57,59,51,56,58};
                           
@@ -340,11 +383,10 @@ void midi_receive_thread (thread *t) {
                             }
                         }
                         
-                        for (int n=0; n<12; ++n) {
-                            if (trigmatch[n] == note) {
-                                if (noteon) midi_noteon_response (n, vel);
-                                else midi_noteoff_response (n);
-                            }
+                        int n = midi_match_trigger (note);
+                        if (n>=0) {
+                            if (noteon) midi_noteon_response (n, vel);
+                            else midi_noteoff_response (n);
                         }
                     }
                     button_manager_flash_midi_in();

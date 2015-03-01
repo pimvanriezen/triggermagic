@@ -160,14 +160,41 @@ void *ui_generic_choice_menu (int curval,
     }
 }
 
+void *ui_edit_global_triggertype (void) {
+        lcd_home();
+        lcd_printf ("System Setup       \n");
+    return ui_generic_choice_menu ((int) CTX.trigger_type,
+                                   "Type:",
+                                   6,
+                                   (int*) &CTX.trigger_type,
+                                   (const char *[]){
+                                        "Roland TR8",
+                                        "Laserharp8",
+                                        "Laserharp9",
+                                        "Laserhar10",
+                                        "Chromatic",
+                                        "Pedals 7"
+                                   },
+                                   (int []){
+                                        TYPE_ROLAND_TR8,
+                                        TYPE_LASERHARP_8,
+                                        TYPE_LASERHARP_9,
+                                        TYPE_LASERHARP_10,
+                                        TYPE_CHROMATIC,
+                                        TYPE_PEDALS7
+                                   },
+                                   ui_edit_global,
+                                   NULL,
+                                   ui_edit_main);
+}
+
 /** Placeholder */
 void* ui_edit_global (void) {
     while (1) {
         lcd_home();
-        lcd_printf ("%02i|System Setup  \n  |%-13s",   
-                    CTX.preset_nr,
-                    "FW rev: 1.0.0   ");
-        
+        lcd_printf ("System Setup       \n%-16s",   
+                    "FW version 1.0.0");
+                    
         button_event *e = button_manager_wait_event (0);
         switch (e->buttons) {
             case BTMASK_STK_RIGHT:
@@ -176,7 +203,7 @@ void* ui_edit_global (void) {
             
             case BTMASK_STK_LEFT:
             case BTMASK_LEFT:
-                break;
+                return ui_edit_global_triggertype;
             
             case BTMASK_STK_CLICK:
             case BTMASK_PLUS:

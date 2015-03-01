@@ -80,6 +80,15 @@ typedef struct preset_s {
     int              tempo; /**< Sequencer tempo */
 } preset;
 
+typedef enum {
+    TYPE_ROLAND_TR8,
+    TYPE_LASERHARP_8,
+    TYPE_LASERHARP_9,
+    TYPE_LASERHARP_10,
+    TYPE_CHROMATIC,
+    TYPE_PEDALS_7
+} triggertype;
+
 /** Global performance context */
 typedef struct context_global_s {
     int              preset_nr; /**< Number of loaded preset (1-99) */
@@ -89,6 +98,7 @@ typedef struct context_global_s {
     preset           presets[100]; /**< Stored presets 1-99 */
     char             portname_midi_in[256];
     char             portname_midi_out[256];
+    triggertype      trigger_type;
     char             send_channel;
 } context_global;
 
@@ -99,6 +109,7 @@ extern context_global CTX;
 /* ============================= FUNCTIONS ============================= */
 
 void context_init (void);
+void context_write_global (void);
 void context_load_preset (int nr);
 void context_store_preset (void);
 

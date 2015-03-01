@@ -20,6 +20,7 @@ void context_init (void) {
     CTX.presets[1].triggers[6].notes[0] = 60;
     CTX.presets[1].triggers[7].notes[0] = 62;
     CTX.presets[1].triggers[8].notes[0] = 63;
+    CTX.triggertype = TYPE_ROLAND_TR8;
     context_load_preset (1);
     
     for (int cpre=2; cpre<100; ++cpre) {
@@ -38,6 +39,44 @@ void context_init (void) {
         fread (CTX.presets, sizeof(preset), 100, pst);
         fclose (pst);
     }
+    
+    pst = fopen ("/boot/tmglobal.dat","r");
+    if (pst) {
+        char buf[1024];
+        while (! feof (pst)) {
+            buf[0] = 0;
+            fgets (buf, 255, pst);
+            buf[255] = 0;
+            if (*buf == 0) continue;
+            char *l = buf + strlen(buf)-1;
+            if (*l == '\n') *l = 0;
+            
+            if (strncmp (buf, "inport:", 7) == 0) {
+                strcpy (CTX.portname_midi_in, buf+7);
+            }
+            else if (strncmp (buf, "outport:", 8) == 0) {
+                strcpy (CTX.portname_midi_out, buf+8);
+            }
+            else if (strncmp (buf, "triggertype:", 12) == 0) {
+                CTX.trigger_type = (triggertype) atoi (buf+12);
+            }
+            else if (strncmp (buf, "sendchannel:", 12) == 0) {
+                CTX.send_channel = atoi (buf+12) - 1;
+            }
+        }
+        fclose (pst);
+    }
+}
+
+void contex_write_global (void) {
+    FILE *f = fopen ("/boot/tmglobal.new","w");
+    if (! f) return;
+    fprintf (f, "inport:%s\n", CTX.portname_midi_in);
+    fprintf (f, "outport:%s\n", CTX.portname_midi_out);
+    fprintf (f, "triggertype:%i\n", (int) CTX.trigger_type);
+    fprintf (f, "sendchannel:%i\n", CTX.send_channel);
+    fclose (f);
+    rename ("/boot/tmglobal.new","/boot/tmglobal.dat");
 }
 
 void context_load_preset (int nr) {
