@@ -160,6 +160,26 @@ void *ui_generic_choice_menu (int curval,
     }
 }
 
+void *ui_edit_global_channel (void) {
+        lcd_home();
+        lcd_printf ("System Setup       \n");
+    return ui_generic_choice_menu ((int) CTX.send_channel,
+                                   "Out Channel:",
+                                   16,
+                                   (int*) &CTX.send_channel,
+                                   (const char *[]){
+                                    "1","2","3","4","5","6","7","8","9",
+                                    "10","11","12","13","14","15","16"
+                                   },
+                                   (int []){
+                                     0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+                                   },
+                                   ui_edit_global_triggertype,
+                                   NULL,
+                                   ui_edit_main);
+}
+
+
 void *ui_edit_global_triggertype (void) {
         lcd_home();
         lcd_printf ("System Setup       \n");
@@ -184,7 +204,7 @@ void *ui_edit_global_triggertype (void) {
                                         TYPE_PEDALS_7
                                    },
                                    ui_edit_global,
-                                   NULL,
+                                   ui_edit_global_channel,
                                    ui_edit_main);
 }
 
@@ -199,11 +219,11 @@ void* ui_edit_global (void) {
         switch (e->buttons) {
             case BTMASK_STK_RIGHT:
             case BTMASK_RIGHT:
-                break;
+                return ui_edit_global_triggertype;
             
             case BTMASK_STK_LEFT:
             case BTMASK_LEFT:
-                return ui_edit_global_triggertype;
+                break;
             
             case BTMASK_STK_CLICK:
             case BTMASK_PLUS:

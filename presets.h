@@ -99,7 +99,7 @@ typedef struct context_global_s {
     char             portname_midi_in[256];
     char             portname_midi_out[256];
     triggertype      trigger_type;
-    char             send_channel;
+    int              send_channel;
 } context_global;
 
 /* ============================== GLOBALS ============================== */
