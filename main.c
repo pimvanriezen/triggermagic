@@ -33,7 +33,7 @@ void context_init (void) {
         }
     }
     
-    FILE *pst = fopen ("/home/pi/triggermagic.presets","r");
+    FILE *pst = fopen ("/boot/tmpreset.dat","r");
     if (pst) {
         fread (CTX.presets, sizeof(preset), 100, pst);
         fclose (pst);
@@ -58,11 +58,11 @@ void context_load_preset (int nr) {
 void context_store_preset (void) {
     if (CTX.preset_nr < 1 || CTX.preset_nr > 99) return;
     memcpy (CTX.presets + CTX.preset_nr, &CTX.preset, sizeof (preset));
-    FILE *pst = fopen ("/home/pi/triggermagic.presets.new","w");
+    FILE *pst = fopen ("/boot/tmpreset.new","w");
     size_t res = fwrite (CTX.presets, sizeof(preset), 100, pst);
     fclose (pst);
-    if (res == 100) rename ("/home/pi/triggermagic.presets.new",
-                            "/home/pi/triggermagic.presets");
+    if (res == 100) rename ("/boot/tmpreset.new",
+                            "/boot/tmpreset.dat");
 }
 
 int main (int argc, const char *argv[]) {
