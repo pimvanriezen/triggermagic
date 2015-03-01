@@ -181,7 +181,7 @@ void *ui_edit_global_triggertype (void) {
                                         TYPE_LASERHARP_9,
                                         TYPE_LASERHARP_10,
                                         TYPE_CHROMATIC,
-                                        TYPE_PEDALS7
+                                        TYPE_PEDALS_7
                                    },
                                    ui_edit_global,
                                    NULL,
