@@ -339,7 +339,7 @@ int midi_match_trigger (char note) {
                 match_note = match_laser10[i];
                 break;
 
-            case TYPE_CHROMATIC::
+            case TYPE_CHROMATIC:
                 match_note = i;
                 break;
 

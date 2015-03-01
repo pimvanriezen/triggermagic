@@ -20,7 +20,7 @@ void context_init (void) {
     CTX.presets[1].triggers[6].notes[0] = 60;
     CTX.presets[1].triggers[7].notes[0] = 62;
     CTX.presets[1].triggers[8].notes[0] = 63;
-    CTX.triggertype = TYPE_ROLAND_TR8;
+    CTX.trigger_type = TYPE_ROLAND_TR8;
     context_load_preset (1);
     
     for (int cpre=2; cpre<100; ++cpre) {
