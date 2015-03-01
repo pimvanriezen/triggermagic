@@ -14,6 +14,8 @@
 const char *CSET = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                    "0123456789./-!@";
 
+static void *last_edit_page = ui_edit_tr_notecount;
+
 /** Main runner. Jumpst into ui_performance(), then follows the trail left
   * by returns.
   */
@@ -483,6 +485,7 @@ void *ui_edit_nextfrom_tr_sendconfig (void) {
 
 /** Menu for the note/sequence send configuration menu. */
 void *ui_edit_tr_sendconfig (void) {
+    last_edit_page = ui_edit_tr_sendconfig;
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
@@ -611,6 +614,7 @@ void *ui_edit_nextfrom_tr_velocity_mode (void) {
 
 /** Menu for selecting the velocity mode */
 void *ui_edit_tr_velocity_mode (void) {
+    last_edit_page = ui_edit_tr_velocity_mode;
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
@@ -701,6 +705,7 @@ void *ui_edit_notes (void) {
   * Editing is relayed to ui_edit_notes().
   */                          
 void *ui_edit_tr_notes (void) {
+    last_edit_page = ui_edit_tr_notes;
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i          \n", CTX.trigger_nr+1);
@@ -747,6 +752,7 @@ void *ui_edit_tr_notes (void) {
 
 /** Displays the number of notes in the chord/sequence for editing */
 void *ui_edit_tr_notecount (void) {
+    last_edit_page = ui_edit_tr_notecount;
     triggerpreset *tpreset = CTX.preset.triggers + CTX.trigger_nr;
     lcd_home();
     lcd_printf ("Trigger %i          ", CTX.trigger_nr+1);
