@@ -160,6 +160,11 @@ void *ui_generic_choice_menu (int curval,
     }
 }
 
+void *ui_save_global (void) {
+    context_write_global();
+    return ui_edit_main;
+}
+
 void *ui_edit_global_channel (void) {
         lcd_home();
         lcd_printf ("System Setup       \n");
@@ -176,7 +181,7 @@ void *ui_edit_global_channel (void) {
                                    },
                                    ui_edit_global_triggertype,
                                    NULL,
-                                   ui_edit_main);
+                                   ui_save_global);
 }
 
 
@@ -205,7 +210,7 @@ void *ui_edit_global_triggertype (void) {
                                    },
                                    ui_edit_global,
                                    ui_edit_global_channel,
-                                   ui_edit_main);
+                                   ui_save_global);
 }
 
 /** Placeholder */
@@ -232,7 +237,7 @@ void* ui_edit_global (void) {
             
             case BTMASK_SHIFT:
                 button_event_free (e);
-                return ui_edit_main;
+                return ui_save_global;
         }
         button_event_free (e);
     }
