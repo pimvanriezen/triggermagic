@@ -287,11 +287,11 @@ void *ui_edit_tr_copy (void) {
     if (copyfrom >= 0) {
         memcpy (tpreset, CTX.preset.triggers + copyfrom,
                 sizeof (triggerpreset));
-        lcd_move (0,1);
+        lcd_setpos (0,1);
         lcd_printf ("Trigger copied..");
         sleep (1);
     }
-    return val;
+    return rval;
 }
 
 /** Menu for the sequence move parameter */
