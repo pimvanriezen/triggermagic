@@ -426,7 +426,6 @@ void midi_receive_thread (thread *t) {
                                     sync_total = 0;
                                 }
                             }
-                            sync_count++;
                         }
                     }
                 }
