@@ -538,9 +538,8 @@ void midi_send_thread (thread *t) {
                     }
                 }
                 
-                printf ("dif %i\n", dif);
-                
-                if (dif > next_offs) {
+                if (dif >= next_offs) {
+                    printf ("dif %i\n", dif);
                     midi_send_sequencer_step (c);
                 }
                 pthread_mutex_unlock (&self.seq_lock);
