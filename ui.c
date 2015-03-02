@@ -951,12 +951,15 @@ static bool light_midi_out = false;
 void *ui_performance (void) {
     lcd_home();
     int tempo = CTX.ext_sync ? CTX.ext_tempo : CTX.preset.tempo;
-    lcd_printf ("%02i|%-13s\n%c%c|\001 %3i     %s%c%i",   
+    char s_tempo[8];
+    sprintf (s_tempo, "%3i", tempo);
+    if (! tempo) strcpy (s_tempo, "EXT");
+    lcd_printf ("%02i|%-13s\n%c%c|\001 %s     %s%c%i",   
                 CTX.preset_nr,
                 CTX.preset.name,
                 light_midi_in ? '\005' : ' ',
                 light_midi_out ? '\006' : ' ',
-                tempo,
+                s_tempo,
                 (CTX.transpose<-9||CTX.transpose>9)?"":" ",
                 CTX.transpose<0?'-':'+',
                 CTX.transpose<0?-CTX.transpose:CTX.transpose);
