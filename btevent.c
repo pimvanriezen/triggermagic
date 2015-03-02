@@ -99,6 +99,7 @@ void button_manager_main (thread *t) {
         
         musleep (50000);
         BT.tick++;
+        if ((BT.tick & 31) == 0) button_manager_add_event (0,false);
     }
 }
 
