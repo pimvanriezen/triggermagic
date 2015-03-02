@@ -79,7 +79,7 @@ void context_write_global (void) {
     fprintf (f, "inport:%s\n", CTX.portname_midi_in);
     fprintf (f, "outport:%s\n", CTX.portname_midi_out);
     fprintf (f, "triggertype:%i\n", (int) CTX.trigger_type);
-    fprintf (f, "sendchannel:%i\n", CTX.send_channel);
+    fprintf (f, "sendchannel:%i\n", CTX.send_channel+1);
     fprintf (f, "extsync:%i\n", CTX.ext_sync);
     fclose (f);
     rename ("/boot/tmglobal.new","/boot/tmglobal.dat");
