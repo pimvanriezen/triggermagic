@@ -498,7 +498,6 @@ void midi_send_thread (thread *t) {
         c = self.current;
         if (c>=0) {
             triggerpreset *T = CTX.preset.triggers + c;
-            if (now < self.trig[c].ts) continue;
             uint64_t dif = now - self.trig[c].ts;
             if (T->send == SEND_SEQUENCE) {
                 pthread_mutex_lock (&self.seq_lock);
@@ -530,7 +529,7 @@ void midi_send_thread (thread *t) {
                     }
                 }
 
-                uint64_t next_offs = notelen * (self.trig[c].looppos);
+                uint64_t next_offs = notelen * (self.trig[c].looppos+1);
 
                 gatelen = (notelen * (100-self.trig[c].gateperc)) / 100ULL;
                 if (self.noteon[note]) {
@@ -540,7 +539,7 @@ void midi_send_thread (thread *t) {
                 }
                 
                 if (dif >= next_offs) {
-                    printf ("dif %i\n", dif);
+                    printf ("dif %lli\n", dif);
                     midi_send_sequencer_step (c);
                 }
                 pthread_mutex_unlock (&self.seq_lock);
