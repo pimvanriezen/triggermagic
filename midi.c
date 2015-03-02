@@ -288,6 +288,8 @@ void midi_noteon_response (int trig, char velo) {
         }
     }
     
+    /* if the sequencer is already active, record its trigger time, so
+       we can quantize to the beat */
     uint64_t last_ts = 0;
     if (self.current >= 0) {
         if (CTX.preset.triggers[self.current].send == SEND_SEQUENCE) {
@@ -331,6 +333,8 @@ void midi_noteon_response (int trig, char velo) {
     
     pthread_mutex_unlock (&self.seq_lock);
 
+    /* If it's not a sequence trigger, perform note operations on all
+       notes in the trigger */
     int ntcount = T->lastnote+1;
     if (T->send != SEND_SEQUENCE) {
         for (i=0; i<ntcount; ++i) {
@@ -375,6 +379,9 @@ char match_laser9[12]   = {0,1,2,4,5,6,7,9,11,3,8,10};
 char match_laser10[12]  = {0,1,2,4,5,6,7,8,9,11,3,10};
 char match_pedals7[12]  = {0,2,4,5,7,9,11,1,3,6,8,10};
 
+/** Convert a MIDI note number to a matched trigger, as configured in
+  * the system settings. Returns -1 if the note didn't match a trigger.
+  */
 int midi_match_trigger (char note) {
     char in_note = note;
     if (CTX.trigger_type != TYPE_ROLAND_TR8) in_note = note % 12;
@@ -435,10 +442,14 @@ void midi_receive_thread (thread *t) {
                     for (int i=0; i<count; ++i) {
                         long msg = buffer[i].message;
                         
+                        /* Note On / Off? */
                         if ((msg & 0xe0) == 0x80) {
                             bool noteon = false;
                             char note = ((msg & 0x7f00) >> 8);
                             char vel = ((msg & 0x7f0000) >> 16);
+                            
+                            /* Note On with velocity 0 is effectively
+                               note off */
                             if ((msg & 0xf0) == 0x90 && vel) {
                                 noteon = true;
                             }
@@ -451,10 +462,16 @@ void midi_receive_thread (thread *t) {
                             button_manager_flash_midi_in();
                         }
                         else if (msg == 0xf8) {
+                            /* Save up to 4 quarter notes before making
+                               a decision. Spreads out the errors in
+                               overall timing */
                             if (! (sync_count % 96)) {
                                 last_sync = current_sync;
+                                
+                                /* Assume we spent some time */
                                 current_sync = getclock() -24;
                                 if (last_sync) {
+                                    /* Calculate desired quarter note len */
                                     uint64_t qn = (current_sync-last_sync)/4;
                                     if (qn > 50) {
                                         self.qnote = qn;
@@ -489,14 +506,19 @@ void midi_receive_thread (thread *t) {
 /** Thread that handles the programmed gate and sequencer. */
 void midi_send_thread (thread *t) {
     while (1) {
+        /* Calculate quarter note length from tempo or ext sync */
         uint64_t qnote = 600000 / CTX.preset.tempo;
         if (CTX.ext_sync) qnote = self.qnote;
         uint64_t now = getclock();
         int c = 0;
+        
+        /* Go over all triggers to close any overdue gates */
         for (c=0; c<12; ++c) {
             triggerpreset *T = CTX.preset.triggers + c;
             uint64_t dif = now - self.trig[c].ts;
             if (now < self.trig[c].ts) continue;
+            
+            /* Only consider SEND_NOTES that has a defined gate length */
             if ((T->send == SEND_NOTES) && (T->nmode != NMODE_GATE) &&
                 (T->nmode != NMODE_LEGATO)) {
                 if (self.trig[c].gate) {
@@ -525,6 +547,8 @@ void midi_send_thread (thread *t) {
                 }
             }
         }
+        
+        /* Check for an active sequencer */
         c = self.current;
         if (c>=0) {
             triggerpreset *T = CTX.preset.triggers + c;
@@ -544,6 +568,9 @@ void midi_send_thread (thread *t) {
                     case 16: notelen /=4; break;
                 }
                 
+                /* If external syncing is enabled, slowly shift the
+                   sequencer clock forwards or backwards to meet the
+                   measured sync points */
                 if (CTX.ext_sync && self.last_sync > self.trig[c].ts) {
                     uint64_t x = self.trig[c].ts;
                     while (x < self.last_sync) x+= notelen;
@@ -562,15 +589,20 @@ void midi_send_thread (thread *t) {
                     }
                 }
 
+                /* Calculate next offset from trigger start */
                 uint64_t next_offs = notelen * (self.trig[c].looppos+1);
 
+                /* Calculate active gate length */
                 gatelen = (notelen * (100-self.trig[c].gateperc)) / 100ULL;
+                
+                /* Close the gate if it is due */
                 if (self.noteon[note]) {
                     if (dif >= (next_offs - gatelen)) {
                         midi_send_noteoff (note);
                     }
                 }
                 
+                /* Send next sequencer step if it is due */
                 if (dif >= next_offs) {
                     midi_send_sequencer_step (c);
                 }
