@@ -41,11 +41,11 @@ static struct midistate {
     uint64_t         last_sync; /**< Last extsync point */
 } self;
 
-/** Return the current time in milliseconds since epoch */
+/** Return the current time in units of 0.1 milliseconds since epoch */
 uint64_t getclock (void) {
     struct timespec ts;
     clock_gettime (CLOCK_MONOTONIC_RAW, &ts);
-    return ((ts.tv_sec * 1000ULL) + (ts.tv_nsec / 1000000ULL));
+    return ((ts.tv_sec * 10000ULL) + (ts.tv_nsec / 100000ULL));
 }
 
 /** Poll ALSA for an available MIDI port */
@@ -292,7 +292,7 @@ void midi_noteon_response (int trig, char velo) {
     
     /* Quantize a jump from one sequence into another */
     if (last_ts && T->send == SEND_SEQUENCE) {
-        uint64_t qnote = 60000 / CTX.preset.tempo;
+        uint64_t qnote = 600000 / CTX.preset.tempo;
         if (CTX.ext_sync) qnote = self.qnote;
         
         uint64_t tsdif = self.trig[trig].ts - last_ts;
@@ -432,7 +432,7 @@ void midi_receive_thread (thread *t) {
                                     if (qn > 50) {
                                         self.qnote = qn;
                                         self.last_sync = current_sync;
-                                        CTX.ext_tempo = (60000/qn);
+                                        CTX.ext_tempo = (600000/qn);
                                         printf ("qnote=%llx\n", qn);
                                         printf ("ext=%i\n", CTX.ext_tempo);
                                     }
@@ -459,7 +459,7 @@ void midi_receive_thread (thread *t) {
 /** Thread that handles the programmed gate and sequencer. */
 void midi_send_thread (thread *t) {
     while (1) {
-        uint64_t qnote = 60000 / CTX.preset.tempo;
+        uint64_t qnote = 600000 / CTX.preset.tempo;
         if (CTX.ext_sync) qnote = self.qnote;
         uint64_t now = getclock();
         int c = 0;
