@@ -464,6 +464,7 @@ void midi_send_thread (thread *t) {
         int c = 0;
         for (c=0; c<12; ++c) {
             triggerpreset *T = CTX.preset.triggers + c;
+            uint64_t dif = now - self.trig[c].ts;
             if (now < self.trig[c].ts) continue;
             if ((T->send == SEND_NOTES) && (T->nmode != NMODE_GATE) &&
                 (T->nmode != NMODE_LEGATO)) {
