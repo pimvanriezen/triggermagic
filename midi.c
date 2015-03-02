@@ -498,7 +498,7 @@ void midi_send_thread (thread *t) {
         c = self.current;
         if (c>=0) {
             triggerpreset *T = CTX.preset.triggers + c;
-            if (now > self.trig[c].ts) continue;
+            if (now < self.trig[c].ts) continue;
             uint64_t dif = now - self.trig[c].ts;
             if (T->send == SEND_SEQUENCE) {
                 pthread_mutex_lock (&self.seq_lock);
