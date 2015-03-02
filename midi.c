@@ -258,8 +258,19 @@ void midi_noteoff_response (int trig) {
   * sequencer to pick up. */
 void midi_noteon_response (int trig, char velo) {
     int i;
-    for (i=0; i<128; ++i) {
-        if (self.noteon[i]) midi_send_noteoff (i);
+    triggerpreset *T = NULL;
+    
+    /* mute any legato notes */
+    for (i=0; i<12; ++i) {
+        T = &CTX.preset.triggers[i];
+        if (T->send == SEND_NOTES && T->nmode == NMODE_LEGATO) {
+            if (self.trig[i].gate) {
+                for (int n=0; n<=T->lastnote;++n) {
+                    midi_send_noteoff (T->notes[n]);
+                }
+                self.trig[i].gate = false;
+            }
+        }
     }
     
     uint64_t last_ts = 0;
@@ -269,17 +280,17 @@ void midi_noteon_response (int trig, char velo) {
         }
     }
 
-    triggerpreset *T = &CTX.preset.triggers[trig];
+    T = &CTX.preset.triggers[trig];
     
     pthread_mutex_lock (&self.seq_lock);
 
-    self.current = trig;
+    if (T->send == SEND_SEQUENCE) self.current = trig;
     self.trig[trig].ts = getclock();
     self.trig[trig].gate = true;
     self.trig[trig].velocity = velo;
     self.trig[trig].seqpos = self.trig[trig].looppos = 0;
     
-    /** Quantize a jump from one sequence into another */
+    /* Quantize a jump from one sequence into another */
     if (last_ts && T->send == SEND_SEQUENCE) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
         if (CTX.ext_sync) qnote = self.qnote;
@@ -323,10 +334,8 @@ void midi_noteon_response (int trig, char velo) {
                     break;
             }
             
-            if (self.current == trig) {
-                midi_send_noteon (T->notes[i], velocity);
-                self.trig[trig].ts = getclock();
-            }
+            midi_send_noteon (T->notes[i], velocity);
+            self.trig[trig].ts = getclock();
         }
     }
 }
@@ -452,8 +461,8 @@ void midi_send_thread (thread *t) {
         uint64_t qnote = 60000 / CTX.preset.tempo;
         if (CTX.ext_sync) qnote = self.qnote;
         uint64_t now = getclock();
-        int c = self.current;
-        if (c>=0) {
+        int c = 0;
+        for (c=0; c<12; ++c) {
             triggerpreset *T = CTX.preset.triggers + c;
             if (now < self.trig[c].ts) continue;
             uint64_t dif = now - self.trig[c].ts;
@@ -482,7 +491,11 @@ void midi_send_thread (thread *t) {
                     }
                 }
             }
-            else if (T->send == SEND_SEQUENCE) {
+        }
+        c = self.current;
+        if (c>=0) {
+            triggerpreset *T = CTX.preset.triggers + c;
+            if (T->send == SEND_SEQUENCE) {
                 pthread_mutex_lock (&self.seq_lock);
                 uint64_t notelen = qnote;
                 uint64_t gatelen;
