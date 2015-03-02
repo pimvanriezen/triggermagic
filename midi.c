@@ -453,7 +453,7 @@ void midi_receive_thread (thread *t) {
                         else if (msg == 0xf8) {
                             if (! (sync_count % 96)) {
                                 last_sync = current_sync;
-                                current_sync = getclock();
+                                current_sync = getclock() -5;
                                 if (last_sync) {
                                     uint64_t qn = (current_sync-last_sync)/4;
                                     if (qn > 50) {
