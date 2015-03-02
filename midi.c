@@ -284,7 +284,15 @@ void midi_noteon_response (int trig, char velo) {
     
     pthread_mutex_lock (&self.seq_lock);
 
-    if (T->send == SEND_SEQUENCE) self.current = trig;
+    if (T->send == SEND_SEQUENCE) {
+        /* Cancel current gig */
+        if (self.current >= 0) {
+            char nt = CTX.preset.triggers[self.current]
+                                .notes[self.trig[self.current].seqpos];
+            if (self.noteon[nt]) midi_send_noteoff (nt);
+        }
+        self.current = trig;
+    }
     self.trig[trig].ts = getclock();
     self.trig[trig].gate = true;
     self.trig[trig].velocity = velo;
