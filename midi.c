@@ -484,8 +484,10 @@ void midi_send_thread (thread *t) {
                             break;
                     }
                     if (dif >= notelen) {
-                        for (int i=0; i<127; ++i) {
-                            if (self.noteon[i]) midi_send_noteoff (i);
+                        for (int i=0; i<=T->lastnote; ++i) {
+                            if (self.noteon[T->notes[i]]) {
+                                midi_send_noteoff (T->notes[i]);
+                            }
                         }
                         self.trig[c].gate = false;
                     }
@@ -531,9 +533,7 @@ void midi_send_thread (thread *t) {
                 gatelen = (notelen * (100-self.trig[c].gateperc)) / 100ULL;
                 if (self.noteon[note]) {
                     if (dif >= (next_offs - gatelen)) {
-                        for (int i=0; i<127; ++i) {
-                            if (self.noteon[i]) midi_send_noteoff (i);
-                        }
+                        midi_send_noteoff (note);
                     }
                 }
                 
