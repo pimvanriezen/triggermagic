@@ -63,6 +63,8 @@ void midi_send_noteon (char note, char velocity) {
     char channel = CTX.send_channel;
     long msg = 0x90 | channel | ((long) note << 8) | (long) velocity << 16;
     pthread_mutex_lock (&self.out_lock);
+    
+    /* Don't send double noteon messages */
     if (! self.noteon[note]) {
         self.noteon[note] = true;
         Pm_WriteShort (self.out, 0, msg);
@@ -98,6 +100,7 @@ void midi_panic (void) {
     }
 }
 
+/** Stop the sequencer from making noise */
 void midi_stop_sequencer (void) {
     pthread_mutex_lock (&self.seq_lock);
     if (self.current>=0) self.trig[self.current].ts = getclock() + 5000;
@@ -112,6 +115,7 @@ void midi_stop_sequencer (void) {
 void midi_send_sequencer_step (int ti) {
     triggerpreset *T = &CTX.preset.triggers[ti];
 
+    /* If we're set to single shot, bail out on the last note */
     if (T->move == MOVE_SINGLE) {
         if (self.trig[ti].looppos > T->lastnote) {
             if (self.trig[ti].looppos == (T->lastnote+1)) {
@@ -122,25 +126,14 @@ void midi_send_sequencer_step (int ti) {
         }
     }
 
+    /* The first step has no noteoff considerations */
     if (self.trig[ti].looppos) {
         char oldnote = T->notes[self.trig[ti].seqpos];
         if (self.noteon[oldnote]) midi_send_noteoff (oldnote);
     
-        switch (T->sgate) {
-            case SGATE_RND_NARROW:
-                self.trig[ti].gateperc = 25 + (rand() % 50);
-                break;
-            
-            case SGATE_RND_WIDE:
-                self.trig[ti].gateperc = 5 + (rand() % 90);
-                break;
-                
-            default:
-                self.trig[ti].gateperc = (int) T->sgate;
-                break;
-        }
-        
+#ifdef DEBUG_SEQUENCER
         printf ("move %i ->", self.trig[ti].seqpos);
+#endif
     
         switch (T->move) {
             case MOVE_SINGLE:
@@ -178,7 +171,9 @@ void midi_send_sequencer_step (int ti) {
                 break;
         }
         
+#ifdef DEBUG_SEQUENCER
         printf ("%i ->", self.trig[ti].seqpos);
+#endif
         
         if ((self.trig[ti].seqpos < 0) ||
             (self.trig[ti].seqpos == 255)) {
@@ -188,8 +183,10 @@ void midi_send_sequencer_step (int ti) {
             self.trig[ti].seqpos = 0;
         }
    
+#ifdef DEBUG_SEQUENCER
        printf ("%i\n", self.trig[ti].seqpos);
- }
+#endif
+    }
     else {
         switch (T->move) {
             case MOVE_LOOP_DOWN:
@@ -200,6 +197,20 @@ void midi_send_sequencer_step (int ti) {
                 self.trig[ti].seqpos = rand() % (T->lastnote + 1);
                 break;
         }                
+    }
+    
+    switch (T->sgate) {
+        case SGATE_RND_NARROW:
+            self.trig[ti].gateperc = 25 + (rand() % 50);
+            break;
+        
+        case SGATE_RND_WIDE:
+            self.trig[ti].gateperc = 5 + (rand() % 90);
+            break;
+            
+        default:
+            self.trig[ti].gateperc = (int) T->sgate;
+            break;
     }
     
     self.trig[ti].looppos++;
@@ -248,7 +259,11 @@ void midi_noteoff_response (int trig) {
             char note = T->notes[i];
             if (self.noteon[note]) midi_send_noteoff (note);
         }
+        
+#ifdef DEBUG_MIDI
         printf ("gate\n");
+#endif
+
         self.trig[trig].gate = false;
     }
 }
@@ -306,7 +321,11 @@ void midi_noteon_response (int trig, char velo) {
         uint64_t tsdif = self.trig[trig].ts - last_ts;
         tsdif = (tsdif/qnote);
         tsdif *= qnote;
+
+#ifdef DEBUG_MIDI        
         printf ("quantizing %llx\n", tsdif);
+#endif        
+        
         self.trig[trig].ts = last_ts + tsdif;
     }
     
@@ -441,8 +460,11 @@ void midi_receive_thread (thread *t) {
                                         self.qnote = qn;
                                         self.last_sync = current_sync;
                                         CTX.ext_tempo = (600000/qn);
+
+#ifdef DEBUG_MIDI
                                         printf ("qnote=%llx\n", qn);
                                         printf ("ext=%i\n", CTX.ext_tempo);
+#endif
                                     }
                                 }
                             }
@@ -507,8 +529,6 @@ void midi_send_thread (thread *t) {
         if (c>=0) {
             triggerpreset *T = CTX.preset.triggers + c;
             if (now < self.trig[c].ts) {
-                printf ("trigger %lli into the future\n",
-                        self.trig[c].ts - now);
                 continue; 
             }
             uint64_t dif = now - self.trig[c].ts;
@@ -552,7 +572,6 @@ void midi_send_thread (thread *t) {
                 }
                 
                 if (dif >= next_offs) {
-                    printf ("dif %lli\n", dif);
                     midi_send_sequencer_step (c);
                 }
                 pthread_mutex_unlock (&self.seq_lock);
