@@ -298,6 +298,7 @@ void midi_noteon_response (int trig, char velo) {
         uint64_t tsdif = self.trig[trig].ts - last_ts;
         tsdif = (tsdif + (qnote/2)) / qnote;
         tsdif *= qnote;
+        printf ("quantizing %llx\n", tsdif);
         self.trig[trig].ts = last_ts + tsdif;
     }
     
